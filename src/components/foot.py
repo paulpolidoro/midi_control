@@ -1,50 +1,94 @@
+import threading
+from typing import Callable
+
 import RPi.GPIO as GPIO
 import time
 
-class Foot:
-    def __init__(self, pin, callback_press=None, callback_release=None):
-        self._pin = pin
-        self._callback_press = callback_press  # Callback opcional para pressionar
-        self._callback_release = callback_release  # Callback opcional para liberar
-        self._press_time = 0  # Contador de tempo total pressionado
-        self._last_press = None  # Momento da última pressão
+from src.components.pin import Pin
 
-        # Configuração do GPIO
+
+class Foot(Pin):
+    """
+    Classe para controle dos footswitchs
+    """
+    LONG_PRESS_THRESHOLD = 2
+
+    def __init__(self, pin, name: str = '',
+                 on_press: Callable[[str], None] = None,
+                 on_press_2: Callable[[str], None] = None,
+                 on_press_3: Callable[[str], None] = None,
+                 on_release: Callable[[str, float], None] = None):
+        """
+        Classe Foot representa um footswitch com várias ações de pressão.
+
+        :param pin: O número do pino GPIO ao qual o footswitch está conectado.
+        :param name: O nome do footswitch para identificação.
+        :param on_press: Função a ser chamada quando o footswitch é pressionado.
+        :param on_press_2: Função a ser chamada quando o footswitch é pressionado por um curto período.
+        :param on_press_3: Função a ser chamada quando o footswitch é pressionado por um longo período.
+        :param on_release: Função a ser chamada quando o footswitch é liberado, recebendo a duração da pressão como argumento.
+        """
+        super().__init__(pin)
+
+        self._name = name
+
+        self.on_press = on_press
+        self.on_press_2 = on_press_2
+        self.on_press_3 = on_press_3
+        self.on_release = on_release
+        self.press_time = None
+        self.is_pressed = False
+        self.long_press_triggered = False
+        self.running = True
+
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self._pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Ativa pull-up interno
+        GPIO.setup(self._pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.add_event_detect(self._pin, GPIO.BOTH, callback=self._handle_press)
+        self.monitor_thread = threading.Thread(target=self._monitor_press)
+        self.monitor_thread.start()
 
-        # Configuração de eventos
-        GPIO.add_event_detect(self._pin, GPIO.BOTH, callback=self._event_handler, bouncetime=200)
+    def _handle_press(self, channel):
+        if GPIO.input(self._pin) == GPIO.LOW and not self.is_pressed:
+            self.press_time = time.time()
+            self.is_pressed = True
+            self.long_press_triggered = False
 
-    def _event_handler(self, channel):
-        """Lida com os eventos de pressão e liberação do botão."""
-        if GPIO.input(self._pin) == GPIO.LOW:  # Botão pressionado
-            self._last_press = time.time()
-            if self._callback_press:
-                self._callback_press()
-        else:  # Botão liberado
-            if self._last_press:
-                press_duration = time.time() - self._last_press  # Calcula tempo pressionado
-                self._press_time += press_duration
-                self._last_press = None
-                if self._callback_release:
-                    self._callback_release(press_duration)  # Passa o tempo ao callback
-            else:
-                if self._callback_release:
-                    self._callback_release(0)
+            if self.on_press:
+                self.on_press(self._name)
+        elif GPIO.input(self._pin) == GPIO.HIGH and self.is_pressed:
+            press_duration = time.time() - self.press_time
+            if press_duration < self.LONG_PRESS_THRESHOLD:
+                if self.on_press_2:
+                    self.on_press_2(self._name)
+            if self.on_release:
+                self.on_release(self._name, press_duration)
 
-    def get_press_time(self):
-        """Retorna o tempo total em que o botão ficou pressionado (em segundos)."""
-        return round(self._press_time, 2)
+            self.is_pressed = False
+            self.press_time = None
 
-    def reset_press_time(self):
-        """Reseta o tempo de pressão acumulado."""
-        self._press_time = 0
+    def _monitor_press(self):
+        while self.running:
+            if self.is_pressed:
+                press_duration = time.time() - self.press_time
+                if press_duration >= self.LONG_PRESS_THRESHOLD and not self.long_press_triggered:
+                    if self.on_press_3:
+                        self.on_press_3(self._name)
+                    self.long_press_triggered = True
+            time.sleep(0.1)
 
-    def get_pin(self):
-        """Retorna o número do pino associado ao botão."""
-        return self._pin
+    def is_pressed(self):
+        return self.is_pressed
+
+    def get_duration(self):
+        if self.is_pressed:
+            return time.time() - self.press_time
+        else:
+            return 0
+
+    def get_name(self):
+        return self._name
 
     def cleanup(self):
-        """Libera os recursos GPIO."""
-        GPIO.cleanup(self._pin)
+        self.running = False
+        self.monitor_thread.join()
+        super().cleanup()
