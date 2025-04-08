@@ -27,10 +27,10 @@ def main():
 
     program_change = ProgramChange(banks=10)
 
-    foots[0].on_press = program_change.set_preset_by_foot(foots[0].get_name())
-    foots[2].on_press = program_change.set_preset_by_foot(foots[1].get_name())
-    foots[2].on_press = program_change.set_preset_by_foot(foots[2].get_name())
-    foots[4].on_press = tap.tap()
+    foots[0].on_press = program_change.set_preset_by_index(0)
+    foots[1].on_press = program_change.set_preset_by_index(1)
+    foots[2].on_press = program_change.set_preset_by_index(2)
+    foots[3].on_press = tap.tap()
 
     try:
         while True:
@@ -44,4 +44,4 @@ def main():
 if __name__ =="__main__":
     start_components()
     main()
-    
+
