@@ -1,7 +1,7 @@
-from src.components.foot import Foot
 from src.components.led import Led
-from src.hardware import pins
 from typing import List
+
+from src.hardware import pins
 
 
 class ProgramChange:
@@ -13,10 +13,10 @@ class ProgramChange:
         self._current_preset = current_preset
         self._current_bank = self._current_preset // self._presets
 
-        self._foots: List[Foot] = []
         self._leds: List[Led] = []
 
-        self._init_config()
+        for i in range(1, self._presets):
+            self._leds.append(Led(getattr(pins, f"LED_{i}")))
 
     def bank_up(self):
         if self._current_bank < self._banks:
@@ -41,17 +41,8 @@ class ProgramChange:
         self._turn_off_all_leds()
         self._leds[self._current_preset % self._presets].on()
 
-    def _set_preset_by_foot(self, name):
-        for i in range(1, self._presets):
-            if name == f"ps{i}":
-                self.set_preset((self._current_bank * i) - 1)
-
-    def _init_config(self):
-        for i in range(1, self._presets):
-            self._foots.append(Foot(getattr(pins, f"FOOT_{i}"), name=f"ps{i}", on_press=self._set_preset_by_foot))
-            self._leds.append(Led(getattr(pins, f"LED_{i}")))
-
-        self.set_preset(self._current_preset)
+    def set_preset_by_index(self, foot_index:int):
+        self.set_preset((self._current_bank * foot_index) - 1)
 
     def _turn_off_all_leds(self):
         for led in self._leds:
