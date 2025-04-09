@@ -10,7 +10,7 @@ class Tap:
     MIN_BPM = 40
     MAX_BPM = 250
 
-    def __init__(self, led: Led, display: Display, initial_bpm: int = 70):
+    def __init__(self, led: Led, display: Display, initial_bpm: int = 60):
         self._led = led
         self._display = display
         self._bpm = initial_bpm
@@ -32,7 +32,7 @@ class Tap:
                 bpm = max(self.MIN_BPM, min(self.MAX_BPM, round(60 / interval)))
                 self._update_led(bpm)
                 self._bpm = bpm
-                self._display.show_tap(self._bpm)
+                self._display.alert(str(self._bpm), "TAP TEMPO")
             else:
                 self._tap_count = 1
 
@@ -45,6 +45,10 @@ class Tap:
 
     def stop(self):
         self._led.stop_blinking()
+
+    def set_tap(self, bpm):
+        self._update_led(bpm)
+        self._bpm = bpm
 
     def _update_led(self, bpm):
         if bpm != self._bpm:

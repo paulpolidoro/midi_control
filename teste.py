@@ -1,3 +1,3 @@
 import time
 
-print((time.time() - 1744165960.9472718))
+print(2*3-3)

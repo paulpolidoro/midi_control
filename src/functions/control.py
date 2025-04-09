@@ -14,7 +14,7 @@ class Control:
         if self._led is not None:
             self._led.on()
 
-        self._display.show_ctrl_status(self._is_enabled)
+        self._display.alert("CTRL ON", text_size=24)
 
 
     def disable(self):
@@ -23,7 +23,7 @@ class Control:
         if self._led is not None:
             self._led.off()
 
-        self._display.show_ctrl_status(self._is_enabled)
+        self._display.alert("CTRL OFF", text_size=24)
 
 
     def toggle(self):
@@ -32,5 +32,5 @@ class Control:
         if self._led is not None:
             self._led.toggle()
 
-        self._display.show_ctrl_status(self._is_enabled)
+        self._display.alert("CTRL ON" if self._is_enabled else "CTRL OFF", text_size=24)
 
