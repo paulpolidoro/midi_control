@@ -1,4 +1,6 @@
 import time
+
+from src.components.display import Display
 from src.components.led import Led
 
 def bpm_to_ms(bpm):
@@ -8,8 +10,9 @@ class Tap:
     MIN_BPM = 40
     MAX_BPM = 250
 
-    def __init__(self, led: Led, initial_bpm: int = 70):
+    def __init__(self, led: Led, display: Display, initial_bpm: int = 70):
         self._led = led
+        self._display = display
         self._bpm = initial_bpm
         self._last_tap_time = None
         self._tap_count = 0
@@ -22,11 +25,14 @@ class Tap:
         else:
             interval = current_time - self._last_tap_time
             self._last_tap_time = current_time
-            self._tap_count += 1
-            if interval > 0:
-                bpm =  max(self.MIN_BPM, min(self.MAX_BPM,  round(60 / interval)))
+            bpm = round(60 / interval)
+
+            if bpm > 20:
+                self._tap_count += 1
+                bpm = max(self.MIN_BPM, min(self.MAX_BPM, round(60 / interval)))
                 self._update_led(bpm)
                 self._bpm = bpm
+                self._display.show_tap(self._bpm)
             else:
                 self._tap_count = 1
 
@@ -36,6 +42,9 @@ class Tap:
     def reset(self):
         self._last_tap_time = None
         self._tap_count = 0
+
+    def stop(self):
+        self._led.stop_blinking()
 
     def _update_led(self, bpm):
         if bpm != self._bpm:

@@ -1,84 +1,59 @@
-import RPi.GPIO as GPIO
-import time
-import threading
+from gpiozero import LED
+from time import sleep
+from threading import Thread
 
-from src.components.pin import Pin
-
-
-class Led(Pin):
-    """
-    Classe para controle os LEDs.
-
-    """
-    LED_ON = True
-    LED_OFF = False
-
+class Led:
     def __init__(self, pin: int):
-        """
-        Constructor.
-        :param pin
-        """
-        super().__init__(pin)
+        self.pin = pin
+        self.led = LED(pin)
 
         self.blink_thread = None
-        self._state = False
         self._blinking = False
+        self._blink_time_on = 1000
+        self._blink_time_off = 1000
         self._on = False
 
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self._pin, GPIO.OUT)
-
     def on(self):
-        """
-        Acende o LED
-        """
-        GPIO.output(self._pin, GPIO.HIGH)
+        """Liga o LED."""
+        self.led.on()
         self._on = True
 
     def off(self):
-        """
-        Apaga o LED
-        """
-        GPIO.output(self._pin, GPIO.LOW)
+        """Desliga o LED."""
+        self.led.off()
         self._on = False
 
     def toggle(self):
-        """
-        Liga ou desliga o LED de acordo com o estado atual
-        """
-        if self._state:
+        """Altera o estado do LED (liga/desliga)."""
+        if self._on:
             self.off()
         else:
             self.on()
 
     def is_on(self):
-        """
-        Retorna se o LED está ligado ou desligado.
-        :return: Boolean
-        """
+        """Verifica se o LED está ligado."""
         return self._on
 
     def blink(self, on_time_ms: int, off_time_ms: int):
-        """
-        Faz o LED piscar no tempo definido.
-        :param on_time_ms: Tempo em milissegundos que o LED ficará aceso
-        :param off_time_ms: Tempo em milissegundos que o LED ficará desligado
-        """
-        self._blinking = True
+        """Pisca o LED com os tempos definidos."""
+        self._blink_time_on = on_time_ms
+        self._blink_time_off = off_time_ms
 
-        def _blink():
-            while self._blinking:
-                self.on()
-                time.sleep(on_time_ms / 1000.0)
-                self.off()
-                time.sleep(off_time_ms / 1000.0)
+        if not self._blinking:
+            self._blinking = True
 
-        self.blink_thread = threading.Thread(target=_blink)
-        self.blink_thread.start()
+            def _blink():
+                while self._blinking:
+                    self.on()
+                    sleep(self._blink_time_on / 1000.0)
+                    self.off()
+                    sleep(self._blink_time_off / 1000.0)
+
+            self.blink_thread = Thread(target=_blink)
+            self.blink_thread.start()
 
     def stop_blinking(self):
-        """
-        Faz o LED parar de piscar
-        """
-        self._blinking = False
-        self.blink_thread.join()
+        if self._blinking:
+            self._blinking = False
+            if self.blink_thread:
+                self.blink_thread.join()

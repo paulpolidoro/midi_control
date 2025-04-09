@@ -1,85 +1,95 @@
-import threading
-import time
-from typing import Callable, Optional
+from gpiozero import Button
+from time import time, sleep
+from threading import Thread, Lock
 
-import RPi.GPIO as GPIO
+# Define um dicionário compartilhado para rastrear os estados dos botões
+button_states = {}
+lock = Lock()
 
-from src.components.pin import Pin
+
+def detect_multiple_press():
+    with lock:
+        pressed_buttons = [name for name, state in button_states.items() if state]
+        return len(pressed_buttons) > 1
 
 
-class Foot(Pin):
+class Foot:
     LONG_PRESS_THRESHOLD = 2
 
-    def __init__(self, pin:int, controller, name: Optional[str] = None):
-        super().__init__(pin)
-        self._name = name
-        self._controller = controller
-        self.is_pressed = False
-        self._press_time = 0
-        self._disable_callback = False
-        self._monitoring = False
+    def __init__(self, pin, name):
+        self.pin = pin
+        self.name = name
+        self.button = Button(pin)
 
-        self.on_press:Optional[Callable[[str], None]] = None
-        self.on_short_press:Optional[Callable[[str], None]] = None
-        self.on_long_press:Optional[Callable[[str], None]] = None
-        self.on_release:Optional[Callable[[str], None]] = None
+        # Variáveis para callbacks individuais
+        self._on_press = None
+        self._on_short_press = None
+        self._on_long_press = None
+        self._on_release = None
 
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self._pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(self._pin, GPIO.BOTH, callback=self._handle_press)
+        self._enabled_callbacks = True
 
-    def _handle_press(self, channel):
-        if GPIO.input(self._pin) == GPIO.LOW:
-            self._start_monitoring()
-            self._press_time = time.time()
-            self.is_pressed = True
+        # Controle de tempo e estado
+        self._press_start_time = None
+        self._is_long_press_active = False
 
-            if not self._disable_callback and not self._controller.is_processing_multiple_press():
-                self.on_press(self._name)
-        elif GPIO.input(self._pin) == GPIO.HIGH:
-            if (time.time() - self._press_time) < self.LONG_PRESS_THRESHOLD:
-                if not self._disable_callback and not self._controller.is_processing_multiple_press():
-                    self.on_short_press(self._name)
+        # Adiciona o estado do botão ao dicionário compartilhado
+        with lock:
+            button_states[self.name] = False
 
-            self._stop_monitoring()
-            self.is_pressed = False
-            self._press_time = 0
+        # Configuração de eventos
+        self.button.when_pressed = self._handle_press
+        self.button.when_released = self._handle_release
 
-            if not self._disable_callback and not self._controller.is_processing_multiple_press():
-                self.on_release(self._name)
+    def _handle_press(self):
+        self._press_start_time = time()
+        self._is_long_press_active = False
 
-    def _monitor_press(self):
-        self._monitoring = True
+        with lock:
+            button_states[self.name] = True
 
-        while self._monitoring:
-            if self.is_pressed:
-                if (time.time() - self._press_time) >= self.LONG_PRESS_THRESHOLD:
-                    if not self._disable_callback and not self._controller.is_processing_multiple_press():
-                        self.on_long_press(self._name)
-            time.sleep(0.1)
+        Thread(target=self._delayed_press_callback, daemon=True).start()
 
-    def _start_monitoring(self):
-        self.monitor_thread = threading.Thread(target=self._monitor_press)
-        self.monitor_thread.start()
+        Thread(target=self._monitor_long_press, daemon=True).start()
 
-    def _stop_monitoring(self):
-        self._monitoring = False
-        self.monitor_thread.join()
+    def _delayed_press_callback(self):
+        sleep(0.1)  # Atraso de 100ms
+        if not detect_multiple_press() and self._on_press:
+            self._enabled_callbacks = True
+            self._on_press()
+        else:
+            self._enabled_callbacks = False
 
-    def is_pressed(self):
-        return self.is_pressed
+    def _monitor_long_press(self):
+        while self.button.is_pressed:
+            press_duration = time() - self._press_start_time
+            if press_duration > self.LONG_PRESS_THRESHOLD and not self._is_long_press_active:
+                self._is_long_press_active = True
 
-    def get_name(self)->str:
-        return self._name
+                if self._enabled_callbacks and self._on_long_press:
+                    self._on_long_press()
+            sleep(0.1)
 
-    def get_press_time(self)->float:
-        return self._press_time
+    def _handle_release(self):
+        press_duration = time() - self._press_start_time if self._press_start_time else 0
 
-    def disable_callback(self):
-        self._disable_callback = True
+        if press_duration < self.LONG_PRESS_THRESHOLD and self._enabled_callbacks and self._on_short_press:
+            self._on_short_press()
 
-    def enable_callback(self):
-        self._disable_callback = False
+        if self._enabled_callbacks and self._on_release:
+            self._on_release()
 
-    def callback_state(self)->bool:
-        return not self._disable_callback
+        with lock:
+            button_states[self.name] = False
+
+    def set_on_press(self, callback):
+        self._on_press = callback
+
+    def set_on_short_press(self, callback):
+        self._on_short_press = callback
+
+    def set_on_long_press(self, callback):
+        self._on_long_press = callback
+
+    def set_on_release(self, callback):
+        self._on_release = callback
