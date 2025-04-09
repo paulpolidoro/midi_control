@@ -14,7 +14,7 @@ def detect_multiple_press():
 
 
 class Foot:
-    LONG_PRESS_THRESHOLD = 2
+    LONG_PRESS_THRESHOLD = 1
 
     def __init__(self, pin, name):
         self.pin = pin

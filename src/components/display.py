@@ -24,6 +24,7 @@ class Display:
         self._alert_duration = 2
         self._default_view = None
         self._alert_thread = None
+        self._alert_text_size = 50
 
     def show(self, text: str='', text_size:int=50, title: str='', title_size:int=12, invert: bool = False):
         text_font = ImageFont.truetype(self._default_font, text_size)
@@ -58,22 +59,23 @@ class Display:
         self._alert_title = title
         self._alert_duration = duration
         self._alert_start_time = time.time()
+        self._alert_text_size = text_size
 
         if not self._is_alerting:
-            self._alert_thread = threading.Thread(target=self._show_alert, args=[text_size, invert, blink_text])
+            self._alert_thread = threading.Thread(target=self._show_alert, args=[invert, blink_text])
             self._alert_thread.start()
 
-    def _show_alert(self, text_size=50, invert=False, blink_text=False):
+    def _show_alert(self, invert=False, blink_text=False):
         self._is_alerting = True
 
         while self._is_alerting and (time.time() - self._alert_start_time) < self._alert_duration:
             if blink_text:
-                self.show(self._alert_text, title=self._alert_title, text_size=text_size, invert=invert)
+                self.show(self._alert_text, title=self._alert_title, text_size=self._alert_text_size , invert=invert)
                 time.sleep(self.text_blik_duration)
-                self.show(title=self._alert_title, text_size=text_size, invert=invert)
+                self.show(title=self._alert_title, text_size=self._alert_text_size , invert=invert)
                 time.sleep(self.text_blik_duration)
             else:
-                self.show(self._alert_text, title=self._alert_title, text_size=text_size, invert=invert)
+                self.show(self._alert_text, title=self._alert_title, text_size=self._alert_text_size , invert=invert)
 
             time.sleep(0.1)
 

@@ -5,7 +5,7 @@ from src.components.foot import button_states as foot_states
 
 
 class MultiFoot:
-    LONG_PRESS_THRESHOLD = 2
+    LONG_PRESS_THRESHOLD = 1
 
     def __init__(self):
         self._start_press_time_AB = None

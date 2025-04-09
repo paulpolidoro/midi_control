@@ -5,6 +5,7 @@ from src.components.display import Display
 from src.components.led import Led
 from typing import List
 
+from src.controllers.midi_controller import MidiController
 from src.hardware import pins
 
 
@@ -14,6 +15,7 @@ class ProgramChange:
     _letter = ["A", "B", "C", "D", "E", "F"]
 
     def __init__(self, display: Display, max_presets: int, presets_per_bank: int = 3):
+        self._midi_controller = None
         self._presets_per_bank = presets_per_bank
         self._max_presets = max_presets
         self._max_banks = max_presets // self._presets_per_bank
@@ -83,6 +85,9 @@ class ProgramChange:
         self._next_bank = self._current_bank
         self._is_change_bank = False
 
+        if self._midi_controller:
+            self._midi_controller.send_pc(0, self._current_preset)
+
         self._turn_off_all_leds()
         self._leds[self._current_preset % self._presets_per_bank].on()
 
@@ -116,4 +121,7 @@ class ProgramChange:
         text = f"{self._current_bank:02d}-{self._letter[self._current_preset % self._presets_per_bank].upper()}"
 
         self._display.show(text, title='PRESET MODE')
+
+    def set_midi_controller(self, midi_controller:MidiController):
+        self._midi_controller = midi_controller
 

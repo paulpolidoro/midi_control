@@ -2,6 +2,19 @@ import time
 
 from src.components.display import Display
 from src.components.led import Led
+from src.controllers.midi_controller import MidiController
+
+def bpm_to_cc(bpm):
+    data1 = 0
+
+    if bpm > 127:
+        data1 = 1
+
+        data2 =  bpm - 128
+    else:
+        data2 = bpm
+
+    return [data1, min(data2, 127)]
 
 def bpm_to_ms(bpm):
     return 60000 / bpm
@@ -12,6 +25,7 @@ class Tap:
 
     def __init__(self, led: Led, display: Display, initial_bpm: int = 60):
         self._led = led
+        self._midi_controller = None
         self._display = display
         self._bpm = initial_bpm
         self._last_tap_time = None
@@ -51,5 +65,12 @@ class Tap:
         self._bpm = bpm
 
     def _update_led(self, bpm):
+        if self._midi_controller:
+            cc =  bpm_to_cc(bpm)
+            self._midi_controller.send_cc(0, 73, cc[0])
+            self._midi_controller.send_cc(0, 74, cc[1])
         if bpm != self._bpm:
-            self._led.blink(bpm_to_ms(bpm)/2, bpm_to_ms(bpm))
+            self._led.blink(bpm_to_ms(bpm)/2, bpm_to_ms(bpm)/2)
+
+    def set_midi_controller(self, midi_controller:MidiController):
+        self._midi_controller = midi_controller
