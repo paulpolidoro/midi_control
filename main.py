@@ -33,7 +33,7 @@ def main():
 
     ampero_mp80 = AmperoMP80Device(on_get_tap=tap.set_tap, on_get_preset_change=program_change.set_preset)
 
-    foots[3].set_on_press(lambda: tap.tap())
+    foots[3].set_on_short_press(tap.tap)
     foots[3].set_on_long_press(control.toggle)
 
     midi_controller: MidiController = MidiController(ampero_mp80.device_name)
