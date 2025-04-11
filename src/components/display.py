@@ -75,6 +75,9 @@ class Display:
 
     def _alert_task(self, invert=False, blink_text=False):
         self._is_alerting = True
+        current_text = self._alert_text
+        current_title = self._alert_title
+        current_text_size = self._alert_text_size
 
         while self._is_alerting and (time.time() - self._alert_start_time) < self._alert_duration:
             if blink_text:
@@ -83,7 +86,8 @@ class Display:
                 self.show(title=self._alert_title, text_size=self._alert_text_size , invert=invert)
                 time.sleep(self._text_blink_duration)
             else:
-                self.show(self._alert_text, title=self._alert_title, text_size=self._alert_text_size , invert=invert)
+                if current_text != self._alert_text or current_title != self._alert_title or current_text_size != self._alert_text_size:
+                    self.show(self._alert_text, title=self._alert_title, text_size=self._alert_text_size , invert=invert)
 
             time.sleep(0.1)
 
@@ -109,21 +113,26 @@ class Display:
 
     def _toast_task(self, clear=False):
         self._is_toasting = True
+        current_text = self._toast_text
+        current_text_size = self._toast_text_size
 
         while self._is_toasting and (time.time() - self._toast_start_time) < self._toast_duration:
-
             if clear:
                 self._default_view()
                 time.sleep(0.5)
                 clear = False
 
-            self._toast_show(self._toast_text, self._toast_text_size)
+            if current_text != self._toast_text or current_text_size != self._toast_text_size:
+                self._toast_show(self._toast_text, self._toast_text_size)
+                current_text = self._toast_text
+                current_text_size = self._toast_text_size
 
             time.sleep(0.1)
 
         print('END TOAST')
 
         self._is_toasting = False
+        self._default_view()
 
     def _toast_show(self, text: str, text_size: int = 20):
         # Limpa o display
