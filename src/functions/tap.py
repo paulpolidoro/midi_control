@@ -14,14 +14,11 @@ class Tap:
         self._last_tap_time = None
         self._tap_count = 0
 
-        self._on_tap:Optional[Callable[[],None]]=None
+        self._on_tap:Optional[Callable[[int],None]]=None
         self._on_set_tap:Optional[Callable[[int],None]]=None
 
     def tap(self):
         current_time = time.time()
-
-        if self._on_tap:
-            self._on_tap()
 
         if self._last_tap_time is None:
             self._last_tap_time = current_time
@@ -34,6 +31,10 @@ class Tap:
             if bpm > 20:
                 self._tap_count += 1
                 bpm = max(self.MIN_BPM, min(self.MAX_BPM, round(60 / interval)))
+
+                if self._on_tap:
+                    self._on_tap(bpm)
+
                 self._update_led(bpm)
                 self._bpm = bpm
                 self._display.alert(str(self._bpm), "TAP TEMPO")
@@ -62,7 +63,7 @@ class Tap:
             ms = (60000/bpm)
             self._led.blink(ms, ms)
 
-    def set_on_tap(self, on_tap:Callable[[],None]):
+    def set_on_tap(self, on_tap:Callable[[int],None]):
        self._on_tap = on_tap
 
     def set_on_set_tap(self, on_set_tap:Callable[[int],None]):

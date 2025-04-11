@@ -40,7 +40,7 @@ def main():
     midi_controller.set_on_receive(ampero_mp80.handle_midi)
 
     program_change.set_on_preset_change(lambda pc: midi_controller.send_pc(0, pc))
-    tap.set_on_set_tap(lambda bpm: midi_controller.send_cc(0, ampero_mp80.bpm_to_cc(bpm)))
+    tap.set_on_tap(lambda bpm: midi_controller.send_cc(0, ampero_mp80.bpm_to_cc(bpm)))
 
     midi_controller.connect()
 
