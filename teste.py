@@ -42,7 +42,7 @@ text_height = bbox[3] - bbox[1]
 
 # Teste para centralizar texto com aproximação manual
 text_x = (box_x - text_width)/2 # Ajuste baseado na posição desejada
-text_y = (box_y - text_height)/2
+text_y = (box_y - text_height)
 
 # Adiciona texto em negativo (invertido)
 draw.text((text_x, text_y), text, font=font, fill=0)
