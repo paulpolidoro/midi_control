@@ -56,10 +56,14 @@ class Foot:
 
     def _delayed_press_callback(self):
         sleep(0.1)  # Atraso de 100ms
-        if not detect_multiple_press() and self._on_press:
+        if not detect_multiple_press():
             self._enabled_callbacks = True
+
+            if self._on_press:
+                self._on_press()
+
             print('press detected')
-            self._on_press()
+
         else:
             self._enabled_callbacks = False
 
@@ -77,12 +81,14 @@ class Foot:
     def _handle_release(self):
         press_duration = time() - self._press_start_time if self._press_start_time else 0
 
-        if press_duration < self.LONG_PRESS_THRESHOLD and self._enabled_callbacks: #and self._on_short_press:
-            self._on_short_press()
+        if press_duration < self.LONG_PRESS_THRESHOLD and self._enabled_callbacks:
+            if self._on_short_press:
+                self._on_short_press()
             print('short press detected')
 
-        if self._enabled_callbacks:# and self._on_release:
-            self._on_release()
+        if self._enabled_callbacks:
+            if self._on_release:
+                self._on_release()
             print('release detected')
 
         with lock:
