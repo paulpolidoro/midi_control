@@ -35,9 +35,12 @@ draw.rectangle((box_x, box_y, box_x + box_width, box_y + box_height), outline=25
 font = ImageFont.truetype("src/fonts/roboto/Roboto-ExtraBold.ttf", 16)
 text = "NEGATIVO"
 
+text_width, text_height = font.getsize(text)
+
+
 # Teste para centralizar texto com aproximação manual
-text_x = box_x + 8  # Ajuste baseado na posição desejada
-text_y = box_y + 12
+text_x = (box_x - text_width)/2 # Ajuste baseado na posição desejada
+text_y = (box_y - text_height)/2
 
 # Adiciona texto em negativo (invertido)
 draw.text((text_x, text_y), text, font=font, fill=0)
