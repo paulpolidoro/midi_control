@@ -31,9 +31,9 @@ class Led(Pin):
 
     def toggle(self):
         if self._on:
-            self.off()
+            self._led.off()
         else:
-            self.on()
+            self._led.off()
 
     def is_on(self):
         return self._on
