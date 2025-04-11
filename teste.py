@@ -28,11 +28,10 @@ draw.rectangle((box_x, box_y, box_x + box_width, box_y + box_height), outline=25
 # Define fonte e texto
 font = ImageFont.load_default()
 text = "Negativo"
-text_width, text_height = font.getsize(text)  # Ajuste aqui para usar getsize
 
-# Calcula posição para centralizar o texto
-text_x = box_x + (box_width - text_width) // 2
-text_y = box_y + (box_height - text_height) // 2
+# Teste para centralizar texto com aproximação manual
+text_x = box_x + 8  # Ajuste baseado na posição desejada
+text_y = box_y + 12
 
 # Adiciona texto em negativo (invertido)
 draw.text((text_x, text_y), text, font=font, fill=255)
