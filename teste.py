@@ -43,8 +43,8 @@ print(f"Largura: {text_width}, Altura: {text_height}")
 
 
 # Teste para centralizar texto com aproximação manual
-text_x = (box_x - text_width)/2 # Ajuste baseado na posição desejada
-text_y = (box_y - text_height)
+text_x = (box_width - text_width)/2 # Ajuste baseado na posição desejada
+text_y = (box_height - text_height)
 
 # Adiciona texto em negativo (invertido)
 draw.text((text_x, text_y), text, font=font, fill=0)
