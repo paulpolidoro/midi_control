@@ -174,7 +174,7 @@ class Display:
             try:
                 # Carrega e ajusta a imagem
                 img = Image.open(image_path).convert("1")
-                img = img.resize((box_width, box_height))  # Ajusta ao tamanho do retângulo
+                img = img.resize((20, 20))  # Ajusta ao tamanho do retângulo
 
                 # Pega as coordenadas para centralizar a imagem dentro do retângulo
                 img_x = int(box_x)
