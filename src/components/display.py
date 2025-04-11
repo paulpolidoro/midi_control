@@ -172,14 +172,16 @@ class Display:
             if self._toast_image:
                 if current_image != self._toast_image or current_text_size != self._toast_text_size:
                     self._toast_show(image_path=self._toast_image, text_size=self._toast_text_size)
-                    current_text = self._toast_image
+                    current_image = self._toast_image
+                    current_text_size = self._toast_text_size
 
             elif self._toast_text:
                 if current_text != self._toast_text or current_text_size != self._toast_text_size:
                     self._toast_show(text=self._toast_text, text_size=self._toast_text_size)
                     current_text = self._toast_text
+                    current_text_size = self._toast_text_size
 
-            current_text_size = self._toast_text_size
+
 
             time.sleep(0.1)
 
