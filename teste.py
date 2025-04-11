@@ -39,6 +39,8 @@ bbox = font.getbbox(text)
 text_width = bbox[2] - bbox[0]  # Largura do texto
 text_height = bbox[3] - bbox[1]
 
+print(f"Largura: {text_width}, Altura: {text_height}")
+
 
 # Teste para centralizar texto com aproximação manual
 text_x = (box_x - text_width)/2 # Ajuste baseado na posição desejada
