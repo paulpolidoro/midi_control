@@ -79,6 +79,7 @@ class MidiController:
 
     def _try_connect(self):
         while self._wait_connect and not self._is_connected:
+            print('Tentando conectar...')
             available_ports = mido.get_input_names()
             if self._device_name in available_ports:
                 try:
