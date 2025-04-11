@@ -106,7 +106,6 @@ class Display:
             self._toast_thread = threading.Thread(target=self._toast_task, args=[clear])
             self._toast_thread.start()
 
-        pass
 
     def _toast_task(self, clear=False):
         self._is_toasting = True
@@ -121,6 +120,8 @@ class Display:
             self._toast_show(self._toast_text, self._toast_text_size)
 
             time.sleep(0.1)
+
+        print('END TOAST')
 
         self._is_toasting = False
 
