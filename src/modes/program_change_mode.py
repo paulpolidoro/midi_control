@@ -136,7 +136,7 @@ class ProgramChangeMode(Mode, ABC):
 
         text = f"{self._current_bank:02d}-{presset_letter[self._current_preset % self._presets_per_bank].upper()}"
 
-        self._display.show(text, title='PRESET MODE', text_size=54)
+        self._display.show(text, title='PRESET MODE', text_size=52)
 
     def set_on_preset_change(self, callback: Callable[[int], None]):
         self._on_preset_change = callback

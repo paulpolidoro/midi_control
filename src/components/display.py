@@ -17,7 +17,7 @@ class Display:
         i2c = busio.I2C(board.SCL, board.SDA)
         self.oled = SSD1306_I2C(self._display_width, self._display_height, i2c)
 
-        self._text_blink_duration = 0.3
+        self._text_blink_duration = 0.2
 
         self._is_alerting = False
         self._alert_text = ""
