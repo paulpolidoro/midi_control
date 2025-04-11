@@ -80,7 +80,7 @@ class ProgramChangeMode(Mode, ABC):
                     self._thread_change_bank = Thread(target=self._change_bank)
                     self._thread_change_bank.start()
 
-                self._display.alert(f"{self._next_bank:02d}--", "CHANGE BANK", True, self.TIME_WAIT_PRESET)
+                self._display.alert(f"{self._next_bank:02d}--", "CHANGE BANK", True, self.TIME_WAIT_PRESET, blink_text=f"{self._next_bank:02d}")
             else:
                 self._current_bank += next_bank
                 self.set_preset(self._current_bank * self._presets_per_bank - self._presets_per_bank)

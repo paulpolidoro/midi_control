@@ -21,6 +21,7 @@ class Display:
 
         self._is_alerting = False
         self._alert_text = ""
+        self._alert_blink_text = ""
         self._alert_title = ""
         self._alert_start_time = 0
         self._alert_duration = 2
@@ -65,15 +66,16 @@ class Display:
         self.oled.image(image)
         self.oled.show()
 
-    def alert(self, text:str, title:str="", blink_text=False, duration:int=2, text_size:int=50, invert:bool=False):
+    def alert(self, text:str, title:str="", blink=False, duration:int=2, text_size:int=50, invert:bool=False, blink_text:str =None):
         self._alert_text = text
+        self._alert_blink_text = blink_text
         self._alert_title = title
         self._alert_duration = duration
         self._alert_start_time = time.time()
         self._alert_text_size = text_size
 
         if not self._is_alerting:
-            self._alert_thread = threading.Thread(target=self._alert_task, args=[invert, blink_text])
+            self._alert_thread = threading.Thread(target=self._alert_task, args=[invert, blink])
             self._alert_thread.start()
 
     def _alert_task(self, invert=False, blink_text=False):
@@ -86,7 +88,7 @@ class Display:
             if blink_text:
                 self.show(self._alert_text, title=self._alert_title, text_size=self._alert_text_size , invert=invert)
                 time.sleep(self._text_blink_duration)
-                self.show(title=self._alert_title, text_size=self._alert_text_size , invert=invert)
+                self.show(self._alert_blink_text, title=self._alert_title, text_size=self._alert_text_size , invert=invert)
                 time.sleep(self._text_blink_duration)
             else:
                 if current_text != self._alert_text or current_title != self._alert_title or current_text_size != self._alert_text_size:
