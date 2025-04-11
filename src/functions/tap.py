@@ -1,37 +1,23 @@
 import time
-
+from typing import Callable, Optional
 from src.components.display import Display
 from src.components.led import Led
-from src.controllers.midi_controller import MidiController
-
-def bpm_to_cc(bpm):
-    data1 = 0
-
-    if bpm > 127:
-        data1 = 1
-
-        data2 =  bpm - 128
-    else:
-        data2 = bpm
-
-    return [data1, min(data2, 127)]
-
-def bpm_to_ms(bpm):
-    return 60000 / bpm
 
 class Tap:
     MIN_BPM = 40
     MAX_BPM = 250
 
     def __init__(self, led: Led, display: Display, initial_bpm: int = 60):
-        self._led = led
-        self._midi_controller = None
+        self._led:Led = led
         self._display = display
         self._bpm = initial_bpm
         self._last_tap_time = None
         self._tap_count = 0
 
-    def tap(self, name:str=None):
+        self._on_tap:Optional[Callable[[],None]]=None
+        self._on_set_tap:Optional[Callable[[],None]]=None
+
+    def tap(self):
         current_time = time.time()
         if self._last_tap_time is None:
             self._last_tap_time = current_time
@@ -42,6 +28,9 @@ class Tap:
             bpm = round(60 / interval)
 
             if bpm > 20:
+                if self._on_tap:
+                    self._on_tap()
+
                 self._tap_count += 1
                 bpm = max(self.MIN_BPM, min(self.MAX_BPM, round(60 / interval)))
                 self._update_led(bpm)
@@ -61,16 +50,19 @@ class Tap:
         self._led.stop_blinking()
 
     def set_tap(self, bpm):
+        if self._on_set_tap:
+            self._on_set_tap()
+
         self._update_led(bpm)
         self._bpm = bpm
 
-    def _update_led(self, bpm):
-        if self._midi_controller:
-            cc =  bpm_to_cc(bpm)
-            self._midi_controller.send_cc(0, 73, cc[0])
-            self._midi_controller.send_cc(0, 74, cc[1])
+    def _update_led(self, bpm:int):
         if bpm != self._bpm:
-            self._led.blink(bpm_to_ms(bpm)/2, bpm_to_ms(bpm)/2)
+            ms = (60000/bpm)
+            self._led.blink(ms, ms)
 
-    def set_midi_controller(self, midi_controller:MidiController):
-        self._midi_controller = midi_controller
+    def set_on_tap(self, on_tap:Callable[[],None]):
+       self._on_tap = on_tap
+
+    def set_on_set_tap(self, on_set_tap:Callable[[],None]):
+        self._on_set_tap = on_set_tap

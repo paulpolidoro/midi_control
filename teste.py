@@ -1,15 +1,16 @@
-import time
+class Teste:
+    def __init__(self):
+        self._on_short_press = None
+        self._on_long_press = True
 
-def bpm_to_cc(bpm):
-    data1 = 0
+    def in_use(self, callback):
+        try:
+            getattr(self, f'_{callback}')
+            setattr(self, f'_{callback}', True)
+            return True
+        except AttributeError:
+            return False
 
-    if bpm > 127:
-        data1 = 1
+teste = Teste()
 
-        data2 =  bpm - 128
-    else:
-        data2 = bpm
-
-    return [data1, min(data2, 127)]
-
-print(bpm_to_cc(251))
+print(teste.in_use('on_short_press'))

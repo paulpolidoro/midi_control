@@ -1,5 +1,6 @@
 import threading
 import time
+from typing import Callable, Optional
 
 from src.components.foot import button_states as foot_states
 
@@ -32,25 +33,24 @@ class MultiFoot:
              'long_pressed': False}
         ]
 
-        self._on_press_AB = None
-        self._on_short_AB = None
-        self._on_long_AB = None
-        self._on_release_AB = None
+        self._on_press_AB:Optional[Callable[[], None]] = None
+        self._on_short_AB:Optional[Callable[[], None]] = None
+        self._on_long_AB:Optional[Callable[[], None]] = None
+        self._on_release_AB:Optional[Callable[[], None]] = None
 
-        self._on_press_BC = None
-        self._on_short_BC = None
-        self._on_long_BC = None
-        self._on_release_BC = None
+        self._on_press_BC:Optional[Callable[[], None]] = None
+        self._on_short_BC:Optional[Callable[[], None]] = None
+        self._on_long_BC:Optional[Callable[[], None]] = None
+        self._on_release_BC:Optional[Callable[[], None]] = None
 
-        self._on_press_CD = None
-        self._on_short_CD = None
-        self._on_long_CD = None
-        self._on_release_CD = None
+        self._on_press_CD:Optional[Callable[[], None]] = None
+        self._on_short_CD:Optional[Callable[[], None]] = None
+        self._on_long_CD:Optional[Callable[[], None]] = None
+        self._on_release_CD:Optional[Callable[[], None]] = None
 
         self._monitoring = True
         self._thread = threading.Thread(target=self._monitor_multi_press)
         self._thread.start()
-
 
     def _monitor_multi_press(self):
         while self._monitoring:
@@ -59,28 +59,6 @@ class MultiFoot:
             self._handler_multi_press(pressed_buttons, 0, self._on_press_AB, self._on_short_AB, self._on_long_AB, self._on_release_AB)
             self._handler_multi_press(pressed_buttons, 1, self._on_press_BC, self._on_short_BC, self._on_long_BC, self._on_release_BC)
             self._handler_multi_press(pressed_buttons, 2, self._on_press_CD, self._on_short_CD, self._on_long_CD, self._on_release_CD)
-
-
-            # if 'ft0' in pressed_buttons and 'ft1' in pressed_buttons:
-            #     if not self._is_pressed_AB:
-            #         self._start_press_time_AB = time.time()
-            #         self._is_pressed_AB = True
-            #         self.press()
-            #     else:
-            #         if time.time() - self._start_press_time_AB >= self.LONG_PRESS_THRESHOLD and not self._is_long_pressed_AB:
-            #             self.long_press()
-            #             self._is_long_pressed_AB = True
-            #
-            # else:
-            #     if self._is_pressed_AB:
-            #
-            #         if time.time() - self._start_press_time_AB < self.LONG_PRESS_THRESHOLD:
-            #             self.short_press()
-            #
-            #         self._start_press_time_AB = None
-            #         self._is_pressed_AB = False
-            #         self._is_long_pressed_AB = False
-            #         self.release()
 
             time.sleep(0.1)
 
@@ -153,6 +131,36 @@ class MultiFoot:
 
     def set_on_release_cd(self, callback):
         self._on_release_CD = callback
+
+    def callback_is_in_use(self, callback_name: str):
+        try:
+            return getattr(self, f'_{callback_name}') is not None
+        except AttributeError:
+            return None
+
+    def callback_release(self, callback_name: str):
+        try:
+            getattr(self, f'_{callback_name}')
+            setattr(self, f'_{callback_name}', True)
+            return True
+        except AttributeError:
+            return False
+
+    def callback_release_all(self):
+        self._on_press_AB = None
+        self._on_short_AB = None
+        self._on_long_AB = None
+        self._on_release_AB = None
+
+        self._on_press_BC = None
+        self._on_short_BC = None
+        self._on_long_BC = None
+        self._on_release_BC = None
+
+        self._on_press_CD = None
+        self._on_short_CD = None
+        self._on_long_CD = None
+        self._on_release_CD = None
 
     def stop(self):
         self._monitoring = False

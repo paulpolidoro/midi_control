@@ -1,3 +1,5 @@
+from typing import Optional, Callable
+
 from gpiozero import Button
 from time import time, sleep
 from threading import Thread, Lock
@@ -16,22 +18,22 @@ def detect_multiple_press():
 class Foot:
     LONG_PRESS_THRESHOLD = 1
 
-    def __init__(self, pin, name):
-        self.pin = pin
-        self.name = name
-        self.button = Button(pin)
+    def __init__(self, pin:int, name:str) -> None:
+        self.pin:int = pin
+        self.name:str = name
+        self.button:Button = Button(pin)
 
         # Variáveis para callbacks individuais
-        self._on_press = None
-        self._on_short_press = None
-        self._on_long_press = None
-        self._on_release = None
+        self._on_press:Optional[Callable[[], None]] = None
+        self._on_short_press:Optional[Callable[[], None]] = None
+        self._on_long_press:Optional[Callable[[], None]] = None
+        self._on_release:Optional[Callable[[], None]] = None
 
-        self._enabled_callbacks = True
+        self._enabled_callbacks:bool = True
 
         # Controle de tempo e estado
-        self._press_start_time = None
-        self._is_long_press_active = False
+        self._press_start_time:float = 0
+        self._is_long_press_active:bool = False
 
         # Adiciona o estado do botão ao dicionário compartilhado
         with lock:
@@ -82,14 +84,34 @@ class Foot:
         with lock:
             button_states[self.name] = False
 
-    def set_on_press(self, callback):
+    def set_on_press(self, callback:Callable[[], None]):
         self._on_press = callback
 
-    def set_on_short_press(self, callback):
+    def set_on_short_press(self, callback:Callable[[], None]):
         self._on_short_press = callback
 
-    def set_on_long_press(self, callback):
+    def set_on_long_press(self, callback:Callable[[], None]):
         self._on_long_press = callback
 
-    def set_on_release(self, callback):
+    def set_on_release(self, callback:Callable[[], None]):
         self._on_release = callback
+
+    def callback_is_in_use(self, callback_name:str):
+        try:
+            return getattr(self, f'_{callback_name}') is not None
+        except AttributeError:
+            return None
+
+    def callback_release(self, callback_name:str):
+        try:
+            getattr(self, f'_{callback_name}')
+            setattr(self, f'_{callback_name}', True)
+            return True
+        except AttributeError:
+            return False
+
+    def callback_release_all(self):
+        self._on_press = None
+        self._on_short_press = None
+        self._on_long_press = None
+        self._on_release = None
