@@ -65,7 +65,7 @@ class ProgramChangeMode(Mode, ABC):
 
             print(self._foots[i].get_name())
 
-            self._foots[i].set_on_press(_create_press_callback(i))
+            self._foots[i].set_on_press(lambda i=i: self.set_preset_by_index(i))
 
 
 
