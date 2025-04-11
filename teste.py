@@ -45,7 +45,7 @@ print(f"Largura: {text_width}, Altura: {text_height}")
 # Teste para centralizar texto com aproximação manual
 # Teste para centralizar texto levando em conta a posição do retângulo
 text_x = box_x + (box_width - text_width) / 2  # Centraliza dentro do retângulo e considera deslocamento
-text_y = box_y - 10 + (box_height - text_height) / 2  # Centraliza dentro do retângulo e considera deslocamento
+text_y = box_y - 5 + (box_height - text_height) / 2  # Centraliza dentro do retângulo e considera deslocamento
 
 # Adiciona texto em negativo (invertido)
 draw.text((text_x, text_y), text, font=font, fill=0)
