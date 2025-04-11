@@ -39,6 +39,7 @@ class ProgramChangeMode(Mode, ABC):
     def start(self):
         self._setup()
         self._default_view()
+        self.set_preset(0)
 
     def stop(self):
         self._stop_change_bank()

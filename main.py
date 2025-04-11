@@ -31,6 +31,7 @@ def main():
     program_change = ProgramChangeMode(display, foots, multi_foot)
     program_change.start()
 
+
     ampero_mp80 = AmperoMP80Device(on_get_tap=tap.set_tap, on_get_preset_change=program_change.set_preset)
 
     foots[3].set_on_short_press(tap.tap)
