@@ -100,6 +100,7 @@ class Display:
         self._toast_text = text
         self._toast_text_size = text_size
         self._toast_duration = duration
+        self._toast_start_time = time.time()
 
         if not self._is_toasting:
             self._toast_thread = threading.Thread(target=self._toast_task, args=[clear])
@@ -109,7 +110,6 @@ class Display:
 
     def _toast_task(self, clear=False):
         self._is_toasting = True
-        self._toast_start_time = time.time()
 
         while self._is_toasting and (time.time() - self._toast_start_time) < self._toast_duration:
 
@@ -121,6 +121,8 @@ class Display:
             self._toast_show(self._toast_text, self._toast_text_size)
 
             time.sleep(0.1)
+
+        self._is_toasting = False
 
     def _toast_show(self, text: str, text_size: int = 20):
         # Limpa o display
