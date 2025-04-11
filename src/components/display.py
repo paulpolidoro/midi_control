@@ -7,7 +7,7 @@ import busio
 from adafruit_ssd1306 import SSD1306_I2C
 from PIL import Image, ImageDraw, ImageFont
 
-from teste import font_size
+from teste import font_size, box_height
 
 
 def carregar_imagem_para_oled(caminho_imagem: str, nova_altura):
@@ -215,8 +215,8 @@ class Display:
 
                 img = carregar_imagem_para_oled(image_path, font_size)
                 if img:
-                    img_x = box_x + img.size[0] / 2
-                    img_y = box_y + img.size[1] / 2
+                    img_x = box_x + (box_width - img.size[0]) / 2
+                    img_y = box_y + (box_height - img.size[1]) / 2
                     image.paste(img, (img_x, img_y))
             except Exception as e:
                 print(f"Erro ao carregar a imagem: {e}")
