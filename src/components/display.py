@@ -96,6 +96,8 @@ class Display:
 
             time.sleep(0.1)
 
+        print("Alert end")
+
         self._is_alerting = False
 
         if self._default_view:
