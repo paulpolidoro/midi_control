@@ -8,6 +8,37 @@ from adafruit_ssd1306 import SSD1306_I2C
 from PIL import Image, ImageDraw, ImageFont
 
 
+def carregar_imagem_para_oled(caminho_imagem: str, largura: int, altura: int):
+    """
+    Carrega a imagem e substitui o fundo transparente para exibição correta no OLED.
+
+    :param caminho_imagem: Caminho da imagem.
+    :param largura: Largura do display.
+    :param altura: Altura do display.
+    :return: Imagem processada pronta para exibição.
+    """
+    try:
+        # Carrega a imagem
+        imagem = Image.open(caminho_imagem).convert("RGBA")  # Converte para RGBA
+
+        # Cria uma nova imagem branca para substituir o fundo transparente
+        nova_imagem = Image.new("RGBA", imagem.size, (255, 255, 255, 255))
+        nova_imagem.paste(imagem, (0, 0), mask=imagem)
+
+        # Converte a imagem para monocromático
+        imagem_monocromatica = nova_imagem.convert("1")
+
+        # Redimensiona para caber no display OLED
+        imagem_redimensionada = imagem_monocromatica.resize((largura, altura))
+
+        return imagem_redimensionada
+    except FileNotFoundError:
+        print(f"Erro: O arquivo '{caminho_imagem}' não foi encontrado.")
+    except Exception as e:
+        print(f"Erro ao processar a imagem: {e}")
+        return None
+
+
 class Display:
     _display_width = 128
     _display_height = 64
@@ -172,16 +203,12 @@ class Display:
         # Exibe a imagem se o caminho for válido
         if image_path and os.path.exists(image_path):
             try:
-                # Carrega e ajusta a imagem
-                img = Image.open(image_path).convert("1")
-                img = img.resize((20, 20))  # Ajusta ao tamanho do retângulo
 
-                # Pega as coordenadas para centralizar a imagem dentro do retângulo
-                img_x = int(box_x)
-                img_y = int(box_y)
-
-                # Cola a imagem dentro do retângulo
-                image.paste(img, (img_x, img_y))
+                img = carregar_imagem_para_oled(image_path, box_width, box_height)
+                if img:
+                    img_x = int(box_x)
+                    img_y = int(box_y)
+                    image.paste(img, (img_x, img_y))
             except Exception as e:
                 print(f"Erro ao carregar a imagem: {e}")
         elif text:  # Caso não haja imagem, exibe o texto
