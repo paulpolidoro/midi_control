@@ -71,17 +71,17 @@ class Foot:
 
                 if self._enabled_callbacks and self._on_long_press:
                     self._on_long_press()
-                    print('long press detected')
+                print('long press detected')
             sleep(0.1)
 
     def _handle_release(self):
         press_duration = time() - self._press_start_time if self._press_start_time else 0
 
-        if press_duration < self.LONG_PRESS_THRESHOLD and self._enabled_callbacks and self._on_short_press:
+        if press_duration < self.LONG_PRESS_THRESHOLD and self._enabled_callbacks: #and self._on_short_press:
             self._on_short_press()
             print('short press detected')
 
-        if self._enabled_callbacks and self._on_release:
+        if self._enabled_callbacks:# and self._on_release:
             self._on_release()
             print('release detected')
 
