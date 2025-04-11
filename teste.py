@@ -23,7 +23,7 @@ draw = ImageDraw.Draw(image)
 # Desenha um quadro central
 
 box_width = 112
-box_height = 32
+box_height = 48
 
 box_x = (display_width - box_width) /2
 box_y = (display_height - box_height) /2
