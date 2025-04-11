@@ -8,44 +8,6 @@ from adafruit_ssd1306 import SSD1306_I2C
 from PIL import Image, ImageDraw, ImageFont
 
 
-def carregar_imagem_para_oled(caminho_imagem: str, nova_altura):
-    """
-    Redimensiona a altura da imagem, ajusta a largura proporcionalmente e corrige o fundo transparente.
-
-    :param caminho_imagem: Caminho para o arquivo de imagem.
-    :param nova_altura: Altura desejada para a imagem.
-    :return: Imagem processada e redimensionada.
-    """
-    try:
-        # Abre a imagem com fundo transparente
-        imagem = Image.open(caminho_imagem).convert("RGBA")
-
-        # Substitui o fundo transparente por branco
-        nova_imagem = Image.new("RGBA", imagem.size, (255, 255, 255, 255))  # Fundo branco
-        nova_imagem.paste(imagem, (0, 0), mask=imagem)
-
-        # Converte para monocromático
-        imagem_monocromatica = nova_imagem.convert("1")
-
-        # Obtém as dimensões originais
-        largura_original, altura_original = imagem_monocromatica.size
-
-        # Calcula a nova largura proporcional
-        nova_largura = int((nova_altura / altura_original) * largura_original)
-
-        # Redimensiona a imagem
-        imagem_redimensionada = imagem_monocromatica.resize((nova_largura, nova_altura))
-
-        return imagem_redimensionada
-    except FileNotFoundError:
-        print(f"Erro: O arquivo '{caminho_imagem}' não foi encontrado.")
-        return None
-    except Exception as e:
-        print(f"Erro ao processar a imagem: {e}")
-        return None
-
-
-
 class Display:
     _display_width = 128
     _display_height = 64
@@ -187,55 +149,67 @@ class Display:
         self._default_view()
 
     def _toast_show(self, text: str = None, image_path: str = None, text_size: int = 20):
-        print("Showing toast")
-        # # Limpa o display
-        # self.oled.fill(0)
-        # self.oled.show()
-
-        # Verifica se há algo para exibir
         if not text and not image_path:
-            return  # Não faz nada se ambos forem None
+            return
 
-        # Cria uma imagem para desenhar
         image = Image.new("1", (self._display_width, self._display_height))
         draw = ImageDraw.Draw(image)
 
-        # Define tamanho do retângulo
         box_width = 120
         box_height = 48
+
         box_x = (self._display_width - box_width) / 2
         box_y = (self._display_height - box_height) / 2
 
-        # Desenha o retângulo com bordas arredondadas
         draw.rounded_rectangle((box_x, box_y, box_x + box_width, box_y + box_height), outline=255, fill=255, radius=4)
 
-        # Exibe a imagem se o caminho for válido
         if image_path and os.path.exists(image_path):
             try:
-                img = carregar_imagem_para_oled(image_path, text_size)
+                img = self._config_image(image_path, text_size)
                 if img:
                     img_x = int(box_x + (box_width - img.size[0]) / 2)
                     img_y = int(box_y + 2+ (box_height - img.size[1]) / 2)
                     image.paste(img, (img_x, img_y))
             except Exception as e:
                 print(f"Erro ao carregar a imagem: {e}")
-        elif text:  # Caso não haja imagem, exibe o texto
-            # Define fonte e dimensões do texto
+        elif text:
             font = ImageFont.truetype("src/fonts/roboto/Roboto-Black.ttf", text_size)
             bbox = font.getbbox(text)
-            text_width = bbox[2] - bbox[0]  # Largura do texto
-            text_height = bbox[3] - bbox[1]  # Altura do texto
+            text_width = bbox[2] - bbox[0]
+            text_height = bbox[3] - bbox[1]
 
-            # Calcula posição para centralizar o texto
             text_x = box_x + ((box_width - text_width) / 2)
             text_y = box_y - ((text_size / 4) - 2) + ((box_height - text_height) / 2)
 
-            # Adiciona o texto ao retângulo
             draw.text((text_x, text_y), text, font=font, fill=0)
 
-        # Exibe no display
         self.oled.image(image)
         self.oled.show()
+
+    @staticmethod
+    def _config_image(path: str, size:int):
+        try:
+            image = Image.open(path).convert("RGBA")
+
+            new_image = Image.new("RGBA", image.size, (255, 255, 255, 255))  # Fundo branco
+            new_image.paste(image, (0, 0), mask=image)
+
+            mono_image = new_image.convert("1")
+
+            mono_image_w, mono_image_h = mono_image.size
+
+            width = int((size / mono_image_h) * mono_image_w)
+
+            # Redimensiona a imagem
+            imagem_redimensionada = mono_image.resize((width, size))
+
+            return imagem_redimensionada
+        except FileNotFoundError:
+            print(f"Erro: O arquivo '{path}' não foi encontrado.")
+            return None
+        except Exception as e:
+            print(f"Erro ao processar a imagem: {e}")
+            return None
 
     def hide_alert(self):
         if self._is_alerting:

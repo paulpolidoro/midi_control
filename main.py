@@ -39,6 +39,9 @@ def main():
     midi_controller: MidiController = MidiController(ampero_mp80.device_name)
     midi_controller.set_on_receive(ampero_mp80.handle_midi)
 
+    midi_controller.set_on_connect(lambda:display.toast(image_path="src/images/usb_on.bmp", text_size=40, duration=2))
+    midi_controller.set_on_disconnect(lambda:display.toast(image_path="src/images/usb_off.bmp", text_size=40, duration=2))
+
     program_change.set_on_preset_change(lambda pc: midi_controller.send_pc(0, pc))
     tap.set_on_tap(lambda bpm: midi_controller.send_cc(0, ampero_mp80.bpm_to_cc(bpm)))
 
@@ -59,7 +62,7 @@ def main():
 
         display.show('BYE', 30, 'Shutting down...')
 
-        time.sleep(1)
+        time.sleep(0.5)
 
         display.clear()
         led_power.off()
