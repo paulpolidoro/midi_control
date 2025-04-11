@@ -119,9 +119,9 @@ class Display:
     def _toast_task(self, clear=False):
         print("Toast started")
         self._is_toasting = True
-        current_text = self._toast_text
-        current_image = self._toast_image
-        current_text_size = self._toast_text_size
+        current_text = None
+        current_image = None
+        current_text_size = None
 
         while self._is_toasting and (time.time() - self._toast_start_time) < self._toast_duration:
             if clear:
@@ -133,13 +133,13 @@ class Display:
                 if current_image != self._toast_image or current_text_size != self._toast_text_size:
                     self._toast_show(image_path=self._toast_image, text_size=self._toast_text_size)
                     current_text = self._toast_image
-                    current_text_size = self._toast_text_size
 
             elif self._toast_text:
                 if current_text != self._toast_text or current_text_size != self._toast_text_size:
                     self._toast_show(text=self._toast_text, text_size=self._toast_text_size)
                     current_text = self._toast_text
-                    current_text_size = self._toast_text_size
+
+            current_text_size = self._toast_text_size
 
             time.sleep(0.1)
 
