@@ -60,6 +60,8 @@ def main():
         display.show('BYE', 30, 'Shutting down...')
 
         time.sleep(2)
+
+        display.clear()
         led_power.off()
         GPIO.cleanup()
 
