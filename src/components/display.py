@@ -215,7 +215,8 @@ class Display:
     def hide_alert(self):
         if self._is_alerting:
             self._is_alerting = False
-            self._alert_thread.join()
+            if self._alert_thread:
+                self._alert_thread.join()
 
     def set_default_view(self, callback):
         self._default_view = callback
