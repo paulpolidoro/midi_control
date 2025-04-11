@@ -38,7 +38,7 @@ class Display:
         self._toast_duration = 2
 
     def show(self, text: str='', text_size:int=50, title: str='', title_size:int=12, invert: bool = False):
-        font = "src/fonts/roboto/Roboto-Medium.ttf"
+        font = "src/fonts/roboto/Roboto-Regular.ttf"
         text_font = ImageFont.truetype(font, text_size)
         title_font = ImageFont.truetype(font, title_size)
 
