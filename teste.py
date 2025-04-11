@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 display_width, display_height = 128, 64
 
-font_size = 20
+font_size = 26
 
 # Configura o I2C e inicializa o display
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -35,7 +35,7 @@ draw.rectangle((box_x, box_y, box_x + box_width, box_y + box_height), outline=25
 
 # Define fonte e texto
 font = ImageFont.truetype("src/fonts/roboto/Roboto-Black.ttf", font_size)
-text = "NEGATIVO"
+text = "CTRL OFF"
 
 bbox = font.getbbox(text)
 text_width = bbox[2] - bbox[0]  # Largura do texto
