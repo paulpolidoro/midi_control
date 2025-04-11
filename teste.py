@@ -5,6 +5,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 display_width, display_height = 128, 64
 
+font_size = 20
+
 # Configura o I2C e inicializa o display
 i2c = busio.I2C(board.SCL, board.SDA)
 oled = SSD1306_I2C(display_width, display_height, i2c)
@@ -32,7 +34,7 @@ box_y = (display_height - box_height) /2
 draw.rectangle((box_x, box_y, box_x + box_width, box_y + box_height), outline=255, fill=255)
 
 # Define fonte e texto
-font = ImageFont.truetype("src/fonts/roboto/Roboto-Bold.ttf", 20)
+font = ImageFont.truetype("src/fonts/roboto/Roboto-Bold.ttf", font_size)
 text = "NEGATIVO"
 
 bbox = font.getbbox(text)
@@ -44,8 +46,8 @@ print(f"Largura: {text_width}, Altura: {text_height}")
 
 # Teste para centralizar texto com aproximação manual
 # Teste para centralizar texto levando em conta a posição do retângulo
-text_x = box_x + (box_width - text_width) / 2  # Centraliza dentro do retângulo e considera deslocamento
-text_y = box_y - 5 + (box_height - text_height) / 2  # Centraliza dentro do retângulo e considera deslocamento
+text_x = box_x + ((box_width - text_width) / 2)  # Centraliza dentro do retângulo e considera deslocamento
+text_y = box_y - (font_size/4) + ((box_height - text_height) / 2)  # Centraliza dentro do retângulo e considera deslocamento
 
 # Adiciona texto em negativo (invertido)
 draw.text((text_x, text_y), text, font=font, fill=0)
