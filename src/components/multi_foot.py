@@ -83,6 +83,7 @@ class MultiFoot:
             if foot['pressed']:
 
                 if time.time() - foot['start_time'] < self.LONG_PRESS_THRESHOLD:
+                    print('short pressed multi')
                     if on_short:
                         on_short()
 
