@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 display_width, display_height = 128, 64
 
-font_size = 26
+font_size = 24
 
 # Configura o I2C e inicializa o display
 i2c = busio.I2C(board.SCL, board.SDA)
