@@ -15,74 +15,74 @@ class AmperoMP100Device(Device, ABC):
 
     """Comandos MIDI"""
     # MIDI de presset
-    CC_VOLUME = (7, 0)
-    CC_EXP1_LEVEL = (11, 0)
-    CC_EXP1_ON = (13, 127)
-    CC_EXP1_OFF = (13, 0)
-    CC_KNOB1_MSB = (16, 0)
-    CC_KNOB1_LSB = (17, 0)
-    CC_KNOB2_MSB = (18, 0)
-    CC_KNOB2_LSB = (19, 0)
-    CC_KNOB3_MSB = (20, 0)
-    CC_KNOB3_LSB = (21, 0)
-    CC_BANK_BACK = (22, 127)
-    CC_BANK_FORWARD = (23, 127)
-    CC_PATCH_BACK = (24, 127)
-    CC_PATCH_FORWARD = (25, 127)
-    CC_BANK_BACK_WAIT_MODE = (26, 127)
-    CC_BANK_FORWARD_WAIT_MODE = (27, 127)
+    CC_VOLUME = [7, 0]
+    CC_EXP1_LEVEL = [11, 0]
+    CC_EXP1_ON = [13, 127]
+    CC_EXP1_OFF = [13, 0]
+    CC_KNOB1_MSB = [16, 0]
+    CC_KNOB1_LSB = [17, 0]
+    CC_KNOB2_MSB = [18, 0]
+    CC_KNOB2_LSB = [19, 0]
+    CC_KNOB3_MSB = [20, 0]
+    CC_KNOB3_LSB = [21, 0]
+    CC_BANK_BACK = [22, 127]
+    CC_BANK_FORWARD = [23, 127]
+    CC_PATCH_BACK = [24, 127]
+    CC_PATCH_FORWARD = [25, 127]
+    CC_BANK_BACK_WAIT_MODE = [26, 127]
+    CC_BANK_FORWARD_WAIT_MODE = [27, 127]
 
     # MIDI efeitos
-    CC_FX1_ON = (48,127)
-    CC_FX1_OFF = (48,0)
-    CC_FX2_ON = (49,127)
-    CC_FX2_OFF = (49,0)
-    CC_AMP_ON = (50,127)
-    CC_AMP_OFF = (50,0)
-    CC_NR_ON = (51,127)
-    CC_NR_OFF = (51,0)
-    CC_CAB_ON = (52,127)
-    CC_CAB_OFF = (52,0)
-    CC_EQ_ON = (53,127)
-    CC_EQ_OFF = (53,0)
-    CC_FX3_ON = (54,127)
-    CC_FX3_OFF = (54,0)
-    CC_DLY_ON = (55,127)
-    CC_DLY_OFF = (55,0)
-    CC_RVB_ON = (56,127)
-    CC_RVB_OFF = (56,0)
-    CC_TUNNER_ON = (57,127)
-    CC_TUNNER_OFF = (57,0)
+    CC_FX1_ON = [48,127]
+    CC_FX1_OFF = [48,0]
+    CC_FX2_ON = [49,127]
+    CC_FX2_OFF = [49,0]
+    CC_AMP_ON = [50,127]
+    CC_AMP_OFF = [50,0]
+    CC_NR_ON = [51,127]
+    CC_NR_OFF = [51,0]
+    CC_CAB_ON = [52,127]
+    CC_CAB_OFF = [52,0]
+    CC_EQ_ON = [53,127]
+    CC_EQ_OFF = [53,0]
+    CC_FX3_ON = [54,127]
+    CC_FX3_OFF = [54,0]
+    CC_DLY_ON = [55,127]
+    CC_DLY_OFF = [55,0]
+    CC_RVB_ON = [56,127]
+    CC_RVB_OFF = [56,0]
+    CC_TUNNER_ON = [57,127]
+    CC_TUNNER_OFF = [57,0]
 
     # MIDI bateria
-    CC_DRUM_ON = (58,127)
-    CC_DRUM_OFF = (58,0)
-    CC_DRUM_PLAY = (59,127)
-    CC_DRUM_STOP = (59,0)
-    CC_DRUM_RTM = (60,99)
-    CC_DRUM_VOLUME = (61,100)
+    CC_DRUM_ON = [58,127]
+    CC_DRUM_OFF = [58,0]
+    CC_DRUM_PLAY = [59,127]
+    CC_DRUM_STOP = [59,0]
+    CC_DRUM_RTM = [60,99]
+    CC_DRUM_VOLUME = [61,100]
 
     # MIDI looper
-    CC_LOOPER_ON = (62,127)
-    CC_LOOPER_OFF = (62,0)
-    CC_LOOPER_REC = (63,127)
-    CC_LOOPER_PLAY = (64,127)
-    CC_LOOPER_STOP = (64,0)
-    CC_LOOPER_TEMPO_NORMAL = (65,127)
-    CC_LOOPER_TEMPO_HALF = (65,0)
-    CC_LOPPER_REVERSE = (66,0)
-    CC_LOOPER_NORMAL = (66,127)
-    CC_DELETE_LOOP = (68,127)
-    CC_LOOPER_REC_VOLUME=(69,99)
-    CC_LOOPER_PLAY_VOLUME=(70,99)
-    CC_LOOPER_PLACEMENT_REAR =(71,0)
-    CC_LOOPER_PLACEMENT_FROM =(71,127)
+    CC_LOOPER_ON = [62,127]
+    CC_LOOPER_OFF = [62,0]
+    CC_LOOPER_REC = [63,127]
+    CC_LOOPER_PLAY = [64,127]
+    CC_LOOPER_STOP = [64,0]
+    CC_LOOPER_TEMPO_NORMAL = [65,127]
+    CC_LOOPER_TEMPO_HALF = [65,0]
+    CC_LOPPER_REVERSE = [66,0]
+    CC_LOOPER_NORMAL = [66,127]
+    CC_DELETE_LOOP = [68,127]
+    CC_LOOPER_REC_VOLUME = [69,99]
+    CC_LOOPER_PLAY_VOLUME = [70,99]
+    CC_LOOPER_PLACEMENT_REAR = [1,0]
+    CC_LOOPER_PLACEMENT_FROM = [71,127]
 
     # MIDI outros
-    CC_CTRL_TOGGLE = (72,127)
-    CC_TAP_TEMPO = (75, 127)
-    CC_DEVICE_LOCK = (76,0)
-    CC_DEVICE_UNLOCK = (76,127)
+    CC_CTRL_TOGGLE = [72,127]
+    CC_TAP_TEMPO = [75, 127]
+    CC_DEVICE_LOCK = [76,0]
+    CC_DEVICE_UNLOCK = [76,127]
 
 
     """Identificadores de comandos MIDI recebidos"""
