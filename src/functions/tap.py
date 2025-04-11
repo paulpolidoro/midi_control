@@ -60,7 +60,7 @@ class Tap:
 
     def _update_led(self, bpm:int):
         if bpm != self._bpm:
-            ms = (60000/bpm)
+            ms = (60000/bpm)/2
             self._led.blink(ms, ms)
 
     def set_on_tap(self, on_tap:Callable[[int],None]):
