@@ -7,8 +7,6 @@ import busio
 from adafruit_ssd1306 import SSD1306_I2C
 from PIL import Image, ImageDraw, ImageFont
 
-from teste import font_size, box_height
-
 
 def carregar_imagem_para_oled(caminho_imagem: str, nova_altura):
     """
@@ -214,8 +212,7 @@ class Display:
         # Exibe a imagem se o caminho for válido
         if image_path and os.path.exists(image_path):
             try:
-                print(font_size)
-                img = carregar_imagem_para_oled(image_path, 30)
+                img = carregar_imagem_para_oled(image_path, text_size)
                 if img:
                     img_x = int(box_x + (box_width - img.size[0]) / 2)
                     img_y = int(box_y + 2+ (box_height - img.size[1]) / 2)

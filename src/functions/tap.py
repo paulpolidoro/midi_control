@@ -38,7 +38,7 @@ class Tap:
                 self._update_led(bpm)
                 self._bpm = bpm
                 #self._display.toast(text=str(self._bpm), text_size=50, duration=2)
-                self._display.toast(image_path="src/images/icon_usb.bmp", text_size=14, duration=2)
+                self._display.toast(image_path="src/images/icon_usb.bmp", text_size=40, duration=2)
             else:
                 self._tap_count = 1
 

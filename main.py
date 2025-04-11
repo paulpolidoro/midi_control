@@ -59,7 +59,7 @@ def main():
 
         display.show('BYE', 30, 'Shutting down...')
 
-        time.sleep(2)
+        time.sleep(1)
 
         display.clear()
         led_power.off()
