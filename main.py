@@ -56,6 +56,8 @@ def main():
         midi_controller.disconnect()
         multi_foot.stop()
         display.clear()
+
+        time.sleep(2)
         led_power.off()
         GPIO.cleanup()
 
