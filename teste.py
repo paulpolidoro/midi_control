@@ -31,7 +31,7 @@ box_x = (display_width - box_width) /2
 box_y = (display_height - box_height) /2
 
 
-draw.rectangle((box_x, box_y, box_x + box_width, box_y + box_height), outline=255, fill=255)
+draw.rounded_rectangle((box_x, box_y, box_x + box_width, box_y + box_height), outline=255, fill=255, radius=4)
 
 # Define fonte e texto
 font = ImageFont.truetype("src/fonts/roboto/Roboto-Black.ttf", font_size)
