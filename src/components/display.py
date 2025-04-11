@@ -216,7 +216,7 @@ class Display:
                 img = carregar_imagem_para_oled(image_path, font_size)
                 if img:
                     img_x = int(box_x + (box_width - img.size[0]) / 2)
-                    img_y = int(box_y + 1 + (box_height - img.size[1]) / 2)
+                    img_y = int(box_y + (box_height - img.size[1]) / 2)
                     image.paste(img, (img_x, img_y))
             except Exception as e:
                 print(f"Erro ao carregar a imagem: {e}")
