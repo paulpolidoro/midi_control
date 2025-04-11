@@ -23,18 +23,18 @@ box_x = 32
 box_y = 16
 box_width = 64
 box_height = 32
-draw.rectangle((box_x, box_y, box_x + box_width, box_y + box_height), outline=255, fill=0)
+draw.rectangle((box_x, box_y, box_x + box_width, box_y + box_height), outline=255, fill=255)
 
 # Define fonte e texto
 font = ImageFont.load_default()
-text = "Negativo"
+text = "NEGATIVO"
 
 # Teste para centralizar texto com aproximação manual
 text_x = box_x + 8  # Ajuste baseado na posição desejada
 text_y = box_y + 12
 
 # Adiciona texto em negativo (invertido)
-draw.text((text_x, text_y), text, font=font, fill=255)
+draw.text((text_x, text_y), text, font=font, fill=0)
 
 # Exibe no display
 oled.image(image)
