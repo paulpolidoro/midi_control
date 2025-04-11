@@ -212,8 +212,8 @@ class Display:
         # Exibe a imagem se o caminho for válido
         if image_path and os.path.exists(image_path):
             try:
-
-                img = carregar_imagem_para_oled(image_path, 12)
+                print(font_size)
+                img = carregar_imagem_para_oled(image_path, 16)
                 if img:
                     img_x = int(box_x + (box_width - img.size[0]) / 2)
                     img_y = int(box_y + 2+ (box_height - img.size[1]) / 2)
