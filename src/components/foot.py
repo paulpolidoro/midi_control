@@ -84,6 +84,9 @@ class Foot:
         with lock:
             button_states[self.name] = False
 
+    def get_name(self) -> str:
+        return self.name
+
     def set_on_press(self, callback:Callable[[], None]):
         self._on_press = callback
 

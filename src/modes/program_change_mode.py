@@ -60,7 +60,9 @@ class ProgramChangeMode(Mode, ABC):
         for i in range(self._presets_per_bank):
             self._leds.append(Led(getattr(Pin, f"LED_{i}")))
 
-            self._foots[i].set_on_press(lambda: self.set_preset_by_index(i))
+            print(self._foots[i].get_name())
+
+            self._foots[i].set_on_press(lambda: self.set_preset_by_index(0))
 
         self._multi_foots.set_on_short_press_ab(lambda: self.bank_up_down(self.DOWN))
 
