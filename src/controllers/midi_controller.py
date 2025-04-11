@@ -140,10 +140,14 @@ class MidiController:
     def send_cc(self, channel: int, data: Union[List[int], List[List[int]]]) -> None:
         try:
             if isinstance(data[0], list):
+                print('varios')
+
                 for sublist in data:
+                    print('sublist: ', sublist)
                     message = mido.Message(self.TYPE_CC, channel=channel, control=sublist[0], value=sublist[1])
                     self._output_port.send(message)
             else:
+                print('um')
                 message = mido.Message(self.TYPE_CC, channel=channel, control=data[0], value=data[1])
                 self._output_port.send(message)
         except Exception as e:
