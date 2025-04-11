@@ -73,6 +73,9 @@ class ProgramChangeMode(Mode, ABC):
         if (next_bank < 0 and self._next_bank > 1) or (next_bank > 0 and self._next_bank < self._max_banks):
             if not direct:
                 self._next_bank += next_bank
+
+                print(self._next_bank)
+
                 self._change_bank_start = time.time()
 
                 if not self._is_change_bank:
