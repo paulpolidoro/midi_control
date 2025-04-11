@@ -37,7 +37,7 @@ class Tap:
 
                 self._update_led(bpm)
                 self._bpm = bpm
-                self._display.alert(str(self._bpm), "TAP TEMPO")
+                self._display.toast(str(self._bpm), 50,2)
             else:
                 self._tap_count = 1
 
