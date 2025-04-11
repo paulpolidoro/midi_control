@@ -34,7 +34,7 @@ box_y = (display_height - box_height) /2
 draw.rectangle((box_x, box_y, box_x + box_width, box_y + box_height), outline=255, fill=255)
 
 # Define fonte e texto
-font = ImageFont.truetype("src/fonts/roboto/Roboto-Bold.ttf", font_size)
+font = ImageFont.truetype("src/fonts/roboto/Roboto-Black.ttf", font_size)
 text = "NEGATIVO"
 
 bbox = font.getbbox(text)
