@@ -35,6 +35,8 @@ class Led(Pin):
         else:
             self._led.on()
 
+        self._on = not self._on
+
     def is_on(self):
         return self._on
     
