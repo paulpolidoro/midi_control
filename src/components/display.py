@@ -1,3 +1,4 @@
+import os
 import threading
 import time
 
@@ -30,7 +31,8 @@ class Display:
         self._is_toasting = False
         self._toast_start_time = 0
         self._toast_thread = None
-        self._toast_text = ""
+        self._toast_text = None
+        self._toast_image = None
         self._toast_text_size = 20
         self._toast_duration = 2
 
@@ -99,10 +101,11 @@ class Display:
         else:
             self.clear()
 
-    def toast(self, text:str, text_size:int=20, duration:int=2, clear:bool=False):
+    def toast(self, text:str=None, image_path:str=None, text_size:int=20, duration:int=2, clear:bool=False):
         self.hide_alert()
 
         self._toast_text = text
+        self._toast_image = image_path
         self._toast_text_size = text_size
         self._toast_duration = duration
         self._toast_start_time = time.time()
@@ -114,6 +117,7 @@ class Display:
     def _toast_task(self, clear=False):
         self._is_toasting = True
         current_text = self._toast_text
+        current_image = self._toast_image
         current_text_size = self._toast_text_size
 
         while self._is_toasting and (time.time() - self._toast_start_time) < self._toast_duration:
@@ -122,20 +126,31 @@ class Display:
                 time.sleep(0.5)
                 clear = False
 
-            if current_text != self._toast_text or current_text_size != self._toast_text_size:
-                self._toast_show(self._toast_text, self._toast_text_size)
-                current_text = self._toast_text
-                current_text_size = self._toast_text_size
+            if self._toast_image:
+                if current_image != self._toast_image or current_text_size != self._toast_text_size:
+                    self._toast_show(image_path=self._toast_image, text_size=self._toast_text_size)
+                    current_text = self._toast_image
+                    current_text_size = self._toast_text_size
+
+            elif self._toast_text:
+                if current_text != self._toast_text or current_text_size != self._toast_text_size:
+                    self._toast_show(text=self._toast_text, text_size=self._toast_text_size)
+                    current_text = self._toast_text
+                    current_text_size = self._toast_text_size
 
             time.sleep(0.1)
 
         self._is_toasting = False
         self._default_view()
 
-    def _toast_show(self, text: str, text_size: int = 20):
+    def _toast_show(self, text: str = None, image_path: str = None, text_size: int = 20):
         # Limpa o display
         self.oled.fill(0)
         self.oled.show()
+
+        # Verifica se há algo para exibir
+        if not text and not image_path:
+            return  # Não faz nada se ambos forem None
 
         # Cria uma imagem para desenhar
         image = Image.new("1", (self._display_width, self._display_height))
@@ -150,18 +165,34 @@ class Display:
         # Desenha o retângulo com bordas arredondadas
         draw.rounded_rectangle((box_x, box_y, box_x + box_width, box_y + box_height), outline=255, fill=255, radius=4)
 
-        # Define fonte e texto
-        font = ImageFont.truetype("src/fonts/roboto/Roboto-Black.ttf", text_size)
-        bbox = font.getbbox(text)
-        text_width = bbox[2] - bbox[0]  # Largura do texto
-        text_height = bbox[3] - bbox[1]  # Altura do texto
+        # Exibe a imagem se o caminho for válido
+        if image_path and os.path.exists(image_path):
+            try:
+                # Carrega e ajusta a imagem
+                img = Image.open(image_path).convert("1")
+                img = img.resize((box_width, box_height))  # Ajusta ao tamanho do retângulo
 
-        # Calcula posição para centralizar o texto
-        text_x = box_x + ((box_width - text_width) / 2)
-        text_y = box_y - ((text_size / 4) - 2) + ((box_height - text_height) / 2)
+                # Pega as coordenadas para centralizar a imagem dentro do retângulo
+                img_x = int(box_x)
+                img_y = int(box_y)
 
-        # Adiciona texto em negativo
-        draw.text((text_x, text_y), text, font=font, fill=0)
+                # Cola a imagem dentro do retângulo
+                image.paste(img, (img_x, img_y))
+            except Exception as e:
+                print(f"Erro ao carregar a imagem: {e}")
+        elif text:  # Caso não haja imagem, exibe o texto
+            # Define fonte e dimensões do texto
+            font = ImageFont.truetype("src/fonts/roboto/Roboto-Black.ttf", text_size)
+            bbox = font.getbbox(text)
+            text_width = bbox[2] - bbox[0]  # Largura do texto
+            text_height = bbox[3] - bbox[1]  # Altura do texto
+
+            # Calcula posição para centralizar o texto
+            text_x = box_x + ((box_width - text_width) / 2)
+            text_y = box_y - ((text_size / 4) - 2) + ((box_height - text_height) / 2)
+
+            # Adiciona o texto ao retângulo
+            draw.text((text_x, text_y), text, font=font, fill=0)
 
         # Exibe no display
         self.oled.image(image)
