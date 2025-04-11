@@ -1,7 +1,7 @@
 import time
 import mido
 
-from typing import Callable, Optional, List
+from typing import Callable, Optional, List, Union
 from threading import Thread
 
 class MidiController:
@@ -79,7 +79,6 @@ class MidiController:
 
     def _try_connect(self):
         while self._wait_connect and not self._is_connected:
-            print('Tentando conectar...')
             available_ports = mido.get_input_names()
             if self._device_name in available_ports:
                 try:
@@ -87,8 +86,6 @@ class MidiController:
                     self._output_port = mido.open_output(self._device_name)
                     
                     self._is_connected = True
-
-                    print('Conectado com sucesso!')
                     
                     self.start_monitor()
                     self.start_receive()
@@ -129,34 +126,35 @@ class MidiController:
                     self._on_receive(message.type, message.data)
 
     def send_pc(self, channel:int, pc:int) -> None:
-        try:
-            message = mido.Message(self.TYPE_PC, channel=channel, program=pc)
-            self._output_port.send(message)
-        except Exception as e:
-            print(f"Error sending Program Change: {e}")
-
-    from typing import List, Union
+        if self._is_connected:
+            try:
+                message = mido.Message(self.TYPE_PC, channel=channel, program=pc)
+                self._output_port.send(message)
+            except Exception as e:
+                print(f"Error sending Program Change: {e}")
 
     def send_cc(self, channel: int, data: Union[List[int], List[List[int]]]) -> None:
-        try:
-            if isinstance(data[0], list):
-                for sublist in data:
-                    message = mido.Message(self.TYPE_CC, channel=channel, control=sublist[0], value=sublist[1])
+        if self._is_connected:
+            try:
+                if isinstance(data[0], list):
+                    for sublist in data:
+                        message = mido.Message(self.TYPE_CC, channel=channel, control=sublist[0], value=sublist[1])
+                        self._output_port.send(message)
+                else:
+                    message = mido.Message(self.TYPE_CC, channel=channel, control=data[0], value=data[1])
                     self._output_port.send(message)
-            else:
-                message = mido.Message(self.TYPE_CC, channel=channel, control=data[0], value=data[1])
-                self._output_port.send(message)
-        except Exception as e:
-            print(f"Error sending Control Change: {e}")
+            except Exception as e:
+                print(f"Error sending Control Change: {e}")
 
     def send_sysex(self, data:List[int]) -> None:
-        try:
-            sysex = [0xF0] + data + [0xF7]
+        if self._is_connected:
+            try:
+                sysex = [0xF0] + data + [0xF7]
 
-            message = mido.Message(self.TYPE_SYSEX, data=sysex)
-            self._output_port.send(message)
-        except Exception as e:
-            print(f"Error sending SysEx message: {e}")
+                message = mido.Message(self.TYPE_SYSEX, data=sysex)
+                self._output_port.send(message)
+            except Exception as e:
+                print(f"Error sending SysEx message: {e}")
 
     def set_on_connect(self, callback:Callable[[],None]) -> None:
         self._on_connect = callback
