@@ -37,7 +37,7 @@ class Tap:
 
                 self._update_led(bpm)
                 self._bpm = bpm
-                self._display.toast(text=str(self._bpm), text_size=50, duration=2)
+                self._display.toast(text=str(self._bpm), size=50, duration=2)
             else:
                 self._tap_count = 1
 
