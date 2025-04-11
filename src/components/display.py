@@ -7,36 +7,45 @@ import busio
 from adafruit_ssd1306 import SSD1306_I2C
 from PIL import Image, ImageDraw, ImageFont
 
+from teste import font_size
 
-def carregar_imagem_para_oled(caminho_imagem: str, largura: int, altura: int):
+
+def carregar_imagem_para_oled(caminho_imagem: str, nova_altura):
     """
-    Carrega a imagem e substitui o fundo transparente para exibição correta no OLED.
+    Redimensiona a altura da imagem, ajusta a largura proporcionalmente e corrige o fundo transparente.
 
-    :param caminho_imagem: Caminho da imagem.
-    :param largura: Largura do display.
-    :param altura: Altura do display.
-    :return: Imagem processada pronta para exibição.
+    :param caminho_imagem: Caminho para o arquivo de imagem.
+    :param nova_altura: Altura desejada para a imagem.
+    :return: Imagem processada e redimensionada.
     """
     try:
-        # Carrega a imagem
-        imagem = Image.open(caminho_imagem).convert("RGBA")  # Converte para RGBA
+        # Abre a imagem com fundo transparente
+        imagem = Image.open(caminho_imagem).convert("RGBA")
 
-        # Cria uma nova imagem branca para substituir o fundo transparente
-        nova_imagem = Image.new("RGBA", imagem.size, (255, 255, 255, 255))
+        # Substitui o fundo transparente por branco
+        nova_imagem = Image.new("RGBA", imagem.size, (255, 255, 255, 255))  # Fundo branco
         nova_imagem.paste(imagem, (0, 0), mask=imagem)
 
-        # Converte a imagem para monocromático
+        # Converte para monocromático
         imagem_monocromatica = nova_imagem.convert("1")
 
-        # Redimensiona para caber no display OLED
-        imagem_redimensionada = imagem_monocromatica.resize((largura, altura))
+        # Obtém as dimensões originais
+        largura_original, altura_original = imagem_monocromatica.size
+
+        # Calcula a nova largura proporcional
+        nova_largura = int((nova_altura / altura_original) * largura_original)
+
+        # Redimensiona a imagem
+        imagem_redimensionada = imagem_monocromatica.resize((nova_largura, nova_altura), Image.ANTIALIAS)
 
         return imagem_redimensionada
     except FileNotFoundError:
         print(f"Erro: O arquivo '{caminho_imagem}' não foi encontrado.")
+        return None
     except Exception as e:
         print(f"Erro ao processar a imagem: {e}")
         return None
+
 
 
 class Display:
@@ -179,9 +188,9 @@ class Display:
 
     def _toast_show(self, text: str = None, image_path: str = None, text_size: int = 20):
         print("Showing toast")
-        # Limpa o display
-        self.oled.fill(0)
-        self.oled.show()
+        # # Limpa o display
+        # self.oled.fill(0)
+        # self.oled.show()
 
         # Verifica se há algo para exibir
         if not text and not image_path:
@@ -204,7 +213,7 @@ class Display:
         if image_path and os.path.exists(image_path):
             try:
 
-                img = carregar_imagem_para_oled(image_path, box_width, box_height)
+                img = carregar_imagem_para_oled(image_path, font_size)
                 if img:
                     img_x = int(box_x)
                     img_y = int(box_y)
