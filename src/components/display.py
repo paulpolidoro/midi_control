@@ -82,6 +82,8 @@ class Display:
         current_title = None
         current_text_size = None
 
+        print(blink_text)
+
         while self._is_alerting and (time.time() - self._alert_start_time) < self._alert_duration:
             if blink_text:
                 self.show(self._alert_text, title=self._alert_title, text_size=self._alert_text_size , invert=invert)
