@@ -43,7 +43,11 @@ def main():
     midi_controller.set_on_connect(lambda:display.toast(image_path="src/images/usb_on.bmp", size=40, duration=2))
     midi_controller.set_on_disconnect(lambda:display.toast(image_path="src/images/usb_off.bmp", size=40, duration=2))
 
-    program_change.set_on_preset_change(lambda pc: midi_controller.send_pc(0, pc))
+    def on_program_change(pc):
+        control.disable(silent=True)
+        midi_controller.send_pc(0, pc)
+
+    program_change.set_on_preset_change(on_program_change)
     tap.set_on_tap(lambda bpm: midi_controller.send_cc(0, ampero_mp80.bpm_to_cc(bpm)))
     control.set_on_toggle(lambda: midi_controller.send_cc(0, ampero_mp80.CC_CTRL_TOGGLE))
 
