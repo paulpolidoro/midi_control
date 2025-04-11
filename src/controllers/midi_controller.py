@@ -87,6 +87,8 @@ class MidiController:
                     self._output_port = mido.open_output(self._device_name)
                     
                     self._is_connected = True
+
+                    print('Conectado com sucesso!')
                     
                     self.start_monitor()
                     self.start_receive()
