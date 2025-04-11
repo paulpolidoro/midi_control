@@ -26,7 +26,7 @@ multi_foot = MultiFoot()
 
 def main():
     led_power.on()
-    tap.set_tap(70)
+    # tap.set_tap(70)
 
     program_change = ProgramChangeMode(display, foots, multi_foot)
     program_change.start()
