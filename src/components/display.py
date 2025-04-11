@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 class Display:
     _display_width = 128
     _display_height = 64
-    _default_font = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+
 
     def __init__(self):
         i2c = busio.I2C(board.SCL, board.SDA)
@@ -35,8 +35,9 @@ class Display:
         self._toast_duration = 2
 
     def show(self, text: str='', text_size:int=50, title: str='', title_size:int=12, invert: bool = False):
-        text_font = ImageFont.truetype(self._default_font, text_size)
-        title_font = ImageFont.truetype(self._default_font, title_size)
+        font = "src/fonts/roboto/Roboto-Black.ttf"
+        text_font = ImageFont.truetype(font, text_size)
+        title_font = ImageFont.truetype(font, title_size)
 
         if invert:
             background_fill = 1
@@ -110,7 +111,6 @@ class Display:
             self._toast_thread = threading.Thread(target=self._toast_task, args=[clear])
             self._toast_thread.start()
 
-
     def _toast_task(self, clear=False):
         self._is_toasting = True
         current_text = self._toast_text
@@ -128,8 +128,6 @@ class Display:
                 current_text_size = self._toast_text_size
 
             time.sleep(0.1)
-
-        print('END TOAST')
 
         self._is_toasting = False
         self._default_view()
