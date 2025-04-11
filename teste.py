@@ -3,9 +3,11 @@ import busio
 from adafruit_ssd1306 import SSD1306_I2C
 from PIL import Image, ImageDraw, ImageFont
 
+display_width, display_height = 128, 64
+
 # Configura o I2C e inicializa o display
 i2c = busio.I2C(board.SCL, board.SDA)
-oled = SSD1306_I2C(128, 64, i2c)
+oled = SSD1306_I2C(display_width, display_height, i2c)
 
 # Limpa o display
 oled.fill(0)
@@ -19,10 +21,14 @@ image = Image.new("1", (width, height))
 draw = ImageDraw.Draw(image)
 
 # Desenha um quadro central
-box_x = 32
-box_y = 16
+
 box_width = 112
 box_height = 32
+
+box_x = (display_width - box_width) /2
+box_y = (display_height - box_height) /2
+
+
 draw.rectangle((box_x, box_y, box_x + box_width, box_y + box_height), outline=255, fill=255)
 
 # Define fonte e texto
