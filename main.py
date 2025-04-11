@@ -26,7 +26,7 @@ multi_foot = MultiFoot()
 
 def main():
     led_power.on()
-    # tap.set_tap(70)
+    tap.set_tap(70)
 
     program_change = ProgramChangeMode(display, foots, multi_foot)
     program_change.start()
@@ -38,6 +38,9 @@ def main():
 
     midi_controller: MidiController = MidiController(ampero_mp80.device_name)
     midi_controller.set_on_receive(ampero_mp80.handle_midi)
+
+    program_change.set_on_preset_change(lambda pc: midi_controller.send_pc(0, pc))
+    tap.set_on_tap(lambda p)
 
     midi_controller.connect()
 
