@@ -110,11 +110,14 @@ class Display:
         self._toast_duration = duration
         self._toast_start_time = time.time()
 
+        print("Starting toast")
+
         if not self._is_toasting:
             self._toast_thread = threading.Thread(target=self._toast_task, args=[clear])
             self._toast_thread.start()
 
     def _toast_task(self, clear=False):
+        print("Toast started")
         self._is_toasting = True
         current_text = self._toast_text
         current_image = self._toast_image
@@ -144,6 +147,7 @@ class Display:
         self._default_view()
 
     def _toast_show(self, text: str = None, image_path: str = None, text_size: int = 20):
+        print("Showing toast")
         # Limpa o display
         self.oled.fill(0)
         self.oled.show()
