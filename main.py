@@ -57,6 +57,8 @@ def main():
         multi_foot.stop()
         display.clear()
 
+        display.show('BYE', 30, 'Shutting down...')
+
         time.sleep(2)
         led_power.off()
         GPIO.cleanup()
