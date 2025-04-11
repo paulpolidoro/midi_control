@@ -62,7 +62,7 @@ class ProgramChangeMode(Mode, ABC):
 
             print(self._foots[i].get_name())
 
-            self._foots[i].set_on_press(lambda: self.set_preset_by_index(0))
+            self._foots[i].set_on_press(lambda: self.set_preset_by_index(i))
 
         self._multi_foots.set_on_short_press_ab(lambda: self.bank_up_down(self.DOWN))
 
