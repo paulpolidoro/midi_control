@@ -57,17 +57,9 @@ class ProgramChangeMode(Mode, ABC):
         self._display.clear()
 
     def _setup(self):
-        def _create_press_callback(index):
-            return lambda: self.set_preset_by_index(index)
-
         for i in range(self._presets_per_bank):
             self._leds.append(Led(getattr(Pin, f"LED_{i}")))
-
-            print(self._foots[i].get_name())
-
             self._foots[i].set_on_press(lambda i=i: self.set_preset_by_index(i))
-
-
 
         self._multi_foots.set_on_short_press_ab(lambda: self.bank_up_down(self.DOWN))
 
@@ -116,7 +108,6 @@ class ProgramChangeMode(Mode, ABC):
             self.bank_up_down(self.UP)
 
     def set_preset_by_index(self, foot_index: int)->None:
-        print(foot_index)
         self.set_preset((self._next_bank - 1) * self._presets_per_bank - 1 + (foot_index + 1))
 
     def _turn_off_all_leds(self):
