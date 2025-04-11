@@ -46,14 +46,13 @@ class Led(Pin):
         self._blink_time_on = on_time_ms
         self._blink_time_off = off_time_ms
 
+        def _blink():
+            while self._blinking:
+                self.toggle()
+                sleep(self._blink_time_on / 1000.0)
+
         if not self._blinking:
             self._blinking = True
-
-            def _blink():
-                while self._blinking:
-                    self.toggle()
-                    sleep(self._blink_time_on / 1000.0)
-
             self.blink_thread = Thread(target=_blink, daemon=True)
             self.blink_thread.start()
 
