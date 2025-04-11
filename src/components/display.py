@@ -33,7 +33,7 @@ class Display:
         self._toast_thread = None
         self._toast_text = None
         self._toast_image = None
-        self._toast_text_size = 20
+        self._toast_size = 20
         self._toast_duration = 2
 
     def show(self, text: str='', text_size:int=50, title: str='', title_size:int=12, invert: bool = False):
@@ -82,6 +82,8 @@ class Display:
         current_title = self._alert_title
         current_text_size = self._alert_text_size
 
+        print("Alert")
+
         while self._is_alerting and (time.time() - self._alert_start_time) < self._alert_duration:
             if blink_text:
                 self.show(self._alert_text, title=self._alert_title, text_size=self._alert_text_size , invert=invert)
@@ -101,23 +103,20 @@ class Display:
         else:
             self.clear()
 
-    def toast(self, text:str=None, image_path:str=None, text_size:int=20, duration:int=2, clear:bool=False):
+    def toast(self, text:str=None, image_path:str=None, size:int=20, duration:int=2, clear:bool=False):
         self.hide_alert()
 
         self._toast_text = text
         self._toast_image = image_path
-        self._toast_text_size = text_size
+        self._toast_size = size
         self._toast_duration = duration
         self._toast_start_time = time.time()
-
-        print("Starting toast")
 
         if not self._is_toasting:
             self._toast_thread = threading.Thread(target=self._toast_task, args=[clear])
             self._toast_thread.start()
 
     def _toast_task(self, clear=False):
-        print("Toast started")
         self._is_toasting = True
         current_text = None
         current_image = None
@@ -130,16 +129,16 @@ class Display:
                 clear = False
 
             if self._toast_image:
-                if current_image != self._toast_image or current_text_size != self._toast_text_size:
-                    self._toast_show(image_path=self._toast_image, text_size=self._toast_text_size)
+                if current_image != self._toast_image or current_text_size != self._toast_size:
+                    self._toast_show(image_path=self._toast_image, text_size=self._toast_size)
                     current_image = self._toast_image
-                    current_text_size = self._toast_text_size
+                    current_text_size = self._toast_size
 
             elif self._toast_text:
-                if current_text != self._toast_text or current_text_size != self._toast_text_size:
-                    self._toast_show(text=self._toast_text, text_size=self._toast_text_size)
+                if current_text != self._toast_text or current_text_size != self._toast_size:
+                    self._toast_show(text=self._toast_text, text_size=self._toast_size)
                     current_text = self._toast_text
-                    current_text_size = self._toast_text_size
+                    current_text_size = self._toast_size
 
 
 
