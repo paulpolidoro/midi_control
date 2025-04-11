@@ -26,7 +26,7 @@ box_height = 32
 draw.rectangle((box_x, box_y, box_x + box_width, box_y + box_height), outline=255, fill=255)
 
 # Define fonte e texto
-font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 16)
+font = ImageFont.truetype("src/fonts/roboto/Roboto_Condensed-Black.ttf", 16)
 text = "NEGATIVO"
 
 # Teste para centralizar texto com aproximação manual
