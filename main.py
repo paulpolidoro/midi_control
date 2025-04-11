@@ -60,15 +60,15 @@ def main():
     except KeyboardInterrupt:
         print("Programa finalizado com sucesso!")
     finally:
+        display.show('BYE', 30, 'Shutting down...')
+
         led_power.blink(500, 500)
         tap.stop()
         midi_controller.disconnect()
         multi_foot.stop()
         display.clear()
 
-        display.show('BYE', 30, 'Shutting down...')
-
-        time.sleep(0.5)
+        time.sleep(0.3)
 
         display.clear()
         led_power.off()
