@@ -72,10 +72,8 @@ class Display:
         self._alert_start_time = time.time()
         self._alert_text_size = text_size
 
-        print(blink_text)
-
         if not self._is_alerting:
-            self._alert_thread = threading.Thread(target=self._alert_task(), args=[invert, blink_text])
+            self._alert_thread = threading.Thread(target=self._alert_task, args=[invert, blink_text])
             self._alert_thread.start()
 
     def _alert_task(self, invert=False, blink_text=False):
