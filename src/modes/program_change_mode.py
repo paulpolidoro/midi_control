@@ -70,6 +70,7 @@ class ProgramChangeMode(Mode, ABC):
             self._multi_foots.set_on_short_press_bc(lambda: self.bank_up_down(self.UP))
 
     def bank_up_down(self, next_bank:int, direct:bool=False):
+        print('bank_up_down')
         if (next_bank < 0 and self._next_bank > 1) or (next_bank > 0 and self._next_bank < self._max_banks):
             if not direct:
                 self._next_bank += next_bank
