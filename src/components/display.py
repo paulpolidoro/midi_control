@@ -78,11 +78,9 @@ class Display:
 
     def _alert_task(self, invert=False, blink_text=False):
         self._is_alerting = True
-        current_text = self._alert_text
-        current_title = self._alert_title
-        current_text_size = self._alert_text_size
-
-        print("Alert")
+        current_text = None
+        current_title = None
+        current_text_size = None
 
         while self._is_alerting and (time.time() - self._alert_start_time) < self._alert_duration:
             if blink_text:
@@ -92,12 +90,13 @@ class Display:
                 time.sleep(self._text_blink_duration)
             else:
                 if current_text != self._alert_text or current_title != self._alert_title or current_text_size != self._alert_text_size:
-                    print('Exibindio')
                     self.show(self._alert_text, title=self._alert_title, text_size=self._alert_text_size , invert=invert)
 
-            time.sleep(0.1)
+                    current_text = self._alert_text
+                    current_title = self._alert_title
+                    current_text_size = self._alert_text_size
 
-        print("Alert end")
+            time.sleep(0.1)
 
         self._is_alerting = False
 
