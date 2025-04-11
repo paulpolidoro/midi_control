@@ -132,7 +132,7 @@ class MidiController:
         except Exception as e:
             print(f"Error sending Program Change: {e}")
 
-    def send_cc(self, channel:int, data:List[int, int]) -> None:
+    def send_cc(self, channel:int, data:List[int]) -> None:
         try:
             message = mido.Message(self.TYPE_CC, channel=channel, control=data[0], value=data[1])
             self._output_port.send(message)
