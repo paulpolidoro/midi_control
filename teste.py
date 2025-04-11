@@ -28,7 +28,7 @@ draw.rectangle((box_x, box_y, box_x + box_width, box_y + box_height), outline=25
 # Define fonte e texto
 font = ImageFont.load_default()
 text = "Negativo"
-text_width, text_height = draw.textsize(text, font=font)
+text_width, text_height = font.getsize(text)  # Ajuste aqui para usar getsize
 
 # Calcula posição para centralizar o texto
 text_x = box_x + (box_width - text_width) // 2
