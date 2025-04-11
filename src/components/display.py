@@ -229,7 +229,7 @@ class Display:
 
             # Calcula posição para centralizar o texto
             text_x = box_x + ((box_width - text_width) / 2)
-            text_y = box_y - ((text_size / 4) - 2) + ((box_height - text_height) / 2)
+            text_y = box_y + 1 - ((text_size / 4) - 2) + ((box_height - text_height) / 2)
 
             # Adiciona o texto ao retângulo
             draw.text((text_x, text_y), text, font=font, fill=0)
