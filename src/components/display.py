@@ -36,7 +36,7 @@ def carregar_imagem_para_oled(caminho_imagem: str, nova_altura):
         nova_largura = int((nova_altura / altura_original) * largura_original)
 
         # Redimensiona a imagem
-        imagem_redimensionada = imagem_monocromatica.resize((nova_largura, nova_altura), Image.ANTIALIAS)
+        imagem_redimensionada = imagem_monocromatica.resize((nova_largura, nova_altura))
 
         return imagem_redimensionada
     except FileNotFoundError:
