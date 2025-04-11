@@ -109,6 +109,7 @@ class ProgramChangeMode(Mode, ABC):
             self.bank_up_down(self.UP)
 
     def set_preset_by_index(self, foot_index: int):
+        print(foot_index)
         self.set_preset((self._next_bank - 1) * self._presets_per_bank - 1 + (foot_index + 1))
 
     def _turn_off_all_leds(self):
